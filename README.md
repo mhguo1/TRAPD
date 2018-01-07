@@ -3,6 +3,17 @@
 
 Finding novel Mendelian disease genes can often be challenging. While some disorders are amenable to family-based analyses (e.g., linkage or segregation), others may be very challenging for a number of reasons. One approach is to use burden testing, where the aggregate burden of rare protein-altering variants in each gene is tested against a set of controls. While one may use a set of available control sequencing data, this is generally too expensive and unavailable in most circumstances. Here, we provide a simple-to-use program that allows for burden testing against publicly available summary level data (e.g., ExAC or gnomAD).
 
+Requirements:
+PBTest is written in Python and R. For Python, it is recommended to use Python version 2.7. For R, any version 2.+ should be okay.
+
+Required Python packages:
+- optparse
+- operator
+- pybedtools
+
+Also, if supplying a bed file in Step 1, BEDTools (http://bedtools.readthedocs.io/en/latest/) must also be loaded in the background. 
+
+
 0) Pre-processing:
 There are several pre-processing steps that are necessary before running PBTest: 1) Separating multi-allelic variants, 2) left-aligning indels, 3) annotating your vcf. Below, we provide several sample command lines for performing these steps:
 
