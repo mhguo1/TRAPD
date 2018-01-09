@@ -5,12 +5,13 @@ import gzip
 
 #Parse options
 parser = optparse.OptionParser()
-parser.add_option("--snpfile", action="store",dest="snpfilename")
+parser.add_option("-s", "--snpfile", action="store",dest="snpfilename")
+parser.add_option("-v", "--vcffile", action="store",dest="vcffilename")
+parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="out.txt") 
+
 parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID")
 parser.add_option("--snpcolname", action="store",dest="snpcolname", default="NA")
-parser.add_option("--vcffile", action="store",dest="vcffilename")
 parser.add_option("--samplefile", action="store",dest="samplefilename", default="ALL")
-parser.add_option("--outfile", action="store",dest="outfilename") #Need to add options for outfiles
 parser.add_option("--recessive", action="store_true",dest="recessive")
 parser.add_option("--maxAF", action="store",dest="maxAF", default=1)
 parser.add_option("--maxAC", action="store",dest="maxAC", default=99999)
@@ -23,7 +24,7 @@ if not options.snpfilename:   # if filename is not given
 if not options.vcffilename:   # if vcf filename is not given
     parser.error('A vcf file is needed')
 
-def findhomcarriers(vcfline, gtname, snplist, snpformat):
+def findhetcarriers(vcfline, gtname, snplist, snpformat):
 	#Find the column in the genotype field corresponding to the genotypes
 	gtcol=vcfline.split('\t')[8].split(":").index(gtname)
 
@@ -40,7 +41,7 @@ def findhomcarriers(vcfline, gtname, snplist, snpformat):
 
 	return carriers
 
-def findhetcarriers(vcfline, gtname, snplist, snpformat):
+def findhomcarriers(vcfline, gtname, snplist, snpformat):
 	#Find the column in the genotype field corresponding to the genotypes
 	gtcol=vcfline.split('\t')[8].split(":").index(gtname)
 
@@ -59,6 +60,7 @@ def findhetcarriers(vcfline, gtname, snplist, snpformat):
 	return carriers
 
 def findsampleindex(vcfline, samplefilename):
+	#This takes the vcf header line and finds the indices corresponding to the individuals present in the sample file
 	samplenames=vcfline.rstrip().split('\t')[9:]
 
 	#If User doesn't provide sample list, assume all samples in vcf
@@ -77,7 +79,7 @@ def findsampleindex(vcfline, samplefilename):
 	return sampleindex
 
 def makesnplist(snpfile, snpcolname):
-	
+	#Makes a list of SNPs present in the snpfile
 	snplist=[]
 	#Read in snpfile
 	snp_file=open(snpfile, "r")
@@ -100,6 +102,7 @@ def makesnplist(snpfile, snpcolname):
 
 
 def calculatecount(genesnps, snptable):
+	#This will generate an aggregate count for a given gene.
         gt_index=[]
         for s in range(0, len(genesnps), 1):
                 if genesnps[s] in snptable:
