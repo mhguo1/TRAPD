@@ -114,9 +114,12 @@ def calculatecount(genesnps, snptable):
         ac=len(list(set(gt_index)))
         return ac
 
-
+#Make list of all SNPs across all genes present in snpfile
 listofsnps=makesnplist(options.snpfilename, options.snpcolname)
-tableout={}
+
+#Make a hashtable with keys as each SNP, and stores a list of indices of carriers for that SNP
+tableout={} 
+
 #Open vcf file
 if str(options.vcffilename)[-3:]==".gz":
 	vcffile=gzip.open(options.vcffilename, "rb")
@@ -146,7 +149,7 @@ for line_vcf1 in vcffile:
 vcffile.close()
 
 
-#Test by writing output
+#Write output
 outfile=open(options.outfilename, "w")
 snpfile=open(options.snpfilename, "r")
 for line_s1 in snpfile:
