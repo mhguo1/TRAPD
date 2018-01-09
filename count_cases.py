@@ -10,7 +10,7 @@ parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID
 parser.add_option("--snpcolname", action="store",dest="snpcolname", default="NA")
 parser.add_option("--vcffile", action="store",dest="vcffilename")
 parser.add_option("--samplefile", action="store",dest="samplefilename", default="ALL")
-parser.add_option("--outfile", action="store",dest="outfilename")
+parser.add_option("--outfile", action="store",dest="outfilename") #Need to add options for outfiles
 parser.add_option("--recessive", action="store_true",dest="recessive")
 parser.add_option("--maxAF", action="store",dest="maxAF", default=1)
 parser.add_option("--maxAC", action="store",dest="maxAC", default=99999)
