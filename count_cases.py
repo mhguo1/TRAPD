@@ -115,7 +115,7 @@ def calculatecount(genesnps, snptable):
 listofsnps=makesnplist(options.snpfilename, options.snpcolname)
 tableout={}
 #Open vcf file
-if str(options.filename)[-3:]==".gz":
+if str(options.vcffilename)[-3:]==".gz":
 	vcffile=gzip.open(options.vcffilename, "rb")
 else:
 	vcffile=open(options.vcffilename, "r")
