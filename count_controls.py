@@ -5,12 +5,15 @@ import gzip
 
 #Parse options
 parser = optparse.OptionParser()
+
+#Required Options
 parser.add_option("--snpfile", action="store",dest="snpfilename")
+parser.add_option("--controlvcf", action="store",dest="vcffilename")
+
+parser.add_option("--outfile", action="store",dest="outfilename", default="out.txt")
 parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID")
 parser.add_option("--snpcolname", action="store",dest="snpcolname", default="NA")
-parser.add_option("--controlvcf", action="store",dest="vcffilename")
 parser.add_option("--pop", action="append",dest="pop", default="ALL")
-parser.add_option("--outfile", action="store",dest="outfilename")
 parser.add_option("--recessive", action="store_true",dest="recessive")
 parser.add_option("--maxAF", action="store",dest="maxAF", default=1)
 parser.add_option("--maxAC", action="store",dest="maxAC", default=99999)
@@ -49,28 +52,34 @@ def makesnplist(snpfile, snpcolname):
 
 def extractcounts(pops, vcfline):
 	ac_out=0
+	ac_hom_out=0
 	af_out=0
 	if (options.pop is None) or ("ALL" in options.pop):
-		
 		ac_out=(";"+vcfline).split((";AC="))[1].split(";")[0]
+		ac_hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0]
 		af_out=(";"+vcfline).split((";AF="))[1].split(";")[0]
 	else:
 		for p in range(0, len(pops), 1):
 			temp_pop=pops[p]
 			ac_out=ac_out+int((";"+vcfline).split((";AC"+pop+"="))[1].split(";")[0])
+			ac_hom_out=ac_hom_out+int((";"+vcfline).split((";Hom_"+pop+"="))[1].split(";")[0])
+			
+			##This needs to be fixed--not sure what it actually does
 			af_out=af_out+float((";"+vcfline).split((";AF"+pop+"="))[1].split(";")[0])
-	return [ac_out, af_out]
+	return [ac_out, ac_hom_out, af_out]
 
 
 def sumcount(snplist, snptable):
 	ac_sum=0
+	ac_hom_sum=0
 	af_sum=0
 	for s in range(0, len(snplist), 1):
 		if snplist[s] in snptable:
 			tempsnp=snplist[s]
 			ac_sum=ac_sum+int(snptable[tempsnp][1])
-			af_sum=af_sum+float(snptable[tempsnp][2])
-	return [ac_sum, af_sum]
+			ac_hom_sum=ac_hom_sum+int(snptable[tempsnp][2])
+			af_sum=af_sum+float(snptable[tempsnp][3])
+	return [ac_sum, ac_hom_sum, af_sum]
 
 
 
@@ -92,7 +101,7 @@ for line_vcf1 in vcffile:
 			snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
 		if snpid in listofsnps:
 			line_out=extractcounts(options.pop, line_vcf[7])
-			tableout[snpid]=[snpid, line_out[0], line_out[1]]
+			tableout[snpid]=[snpid, line_out[0], line_out[1],  line_out[2]]
 
 vcffile.close()
 
@@ -106,7 +115,7 @@ for line_s1 in snpfile:
 		#snplist=list(set(line_s[1].split(',')))
 		snplist=line_s[1].split(',')
 		sumcounts=sumcount(snplist, tableout)
-		outfile.write(line_s[0]+"\t"+str(sumcounts[0])+"\t"+str(sumcounts[1])+'\n')
+		outfile.write(line_s[0]+"\t"+str(sumcounts[0])+"\t"+str(sumcounts[1])+"\t"+str(sumcounts[2])+'\n')
 outfile.close()
 snpfile.close()
 
