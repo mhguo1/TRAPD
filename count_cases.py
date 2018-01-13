@@ -111,8 +111,8 @@ def calculatecount(genesnps, snptable):
                 if genesnps[s] in snptable:
                         tempsnp=genesnps[s]
 ##                        if type(tempsnp) is list:
-                          het_index=het_index+snptable[tempsnp][1]
-	                  hom_index=hom_index+snptable[tempsnp][2]
+                        het_index=het_index+snptable[tempsnp][1]
+	                hom_index=hom_index+snptable[tempsnp][2]
 ##                        else:
 ##                                gt_index.append(tempsnp)
 	
