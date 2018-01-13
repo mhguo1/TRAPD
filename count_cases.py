@@ -5,11 +5,11 @@ import gzip
 
 #Parse options
 parser = optparse.OptionParser()
-parser.add_option("-s", "--snpfile", action="store",dest="snpfilename")
-parser.add_option("-v", "--vcffile", action="store",dest="vcffilename")
-parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="out.txt") 
+parser.add_option("-s", "--snpfile", action="store",dest="snpfilename") #File matching SNPs to genes
+parser.add_option("-v", "--vcffile", action="store",dest="vcffilename") #Path to vcf file
+parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="out.txt") #Output file name 
 
-parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID")
+parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID") #Field in which to get SNP names. If not VCF ID, then CHR:POS:REF:ALT is used
 parser.add_option("--snpcolname", action="store",dest="snpcolname", default="NA")
 parser.add_option("--samplefile", action="store",dest="samplefilename", default="ALL")
 parser.add_option("--recessive", action="store_true",dest="recessive")
@@ -118,7 +118,7 @@ def calculatecount(genesnps, snptable):
 listofsnps=makesnplist(options.snpfilename, options.snpcolname)
 
 #Make a hashtable with keys as each SNP, and stores a list of indices of carriers for that SNP
-tableout={} 
+count_table={} 
 
 #Open vcf file
 if str(options.vcffilename)[-3:]==".gz":
@@ -137,10 +137,10 @@ for line_vcf1 in vcffile:
 		if snpid in listofsnps:
 			if options.recessive:
 				templist=findhomcarriers(line_vcf1, options.gtfield, listofsnps, options.snpcolname)
-				tableout[snpid]=[snpid, len(list(set(sampleindices) & set([x for x in templist if templist.count(x) > 1])))]
+				count_table[snpid]=[snpid, len(list(set(sampleindices) & set([x for x in templist if templist.count(x) > 1])))]
 			else:
 				templist=findhetcarriers(line_vcf1, options.gtfield, listofsnps, options.snpcolname)
-				tableout[snpid]=[snpid, list(set(sampleindices) & set(templist))]
+				count_table[snpid]=[snpid, list(set(sampleindices) & set(templist))]
 	
 	#Find indices of samples in the sample file
 	elif line_vcf[0]=="#CHROM":
@@ -157,7 +157,7 @@ for line_s1 in snpfile:
 	if line_s[0]!="GENE":
 		#snplist=list(set(line_s[1].split(',')))
 		snplist=line_s[1].split(',')
-		count=calculatecount(snplist, tableout)
+		count=calculatecount(snplist, count_table)
 		outfile.write(line_s[0]+"\t"+str(count)+'\n')
 outfile.close()
 snpfile.close()
