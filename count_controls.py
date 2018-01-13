@@ -47,7 +47,7 @@ def extractcounts(pops, vcfline, max_ac, max_af):
 	af_out=(";"+vcfline).split((";AF="))[1].split(";")[0]
 	ac_hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0]
 
-	if (ac_file>max_ac) or (af_file>max_af):
+	if (ac_out>max_ac) or (af_out>max_af):
 		return [[],[]]
 	elif (options.pop is not None) or ("ALL" not in options.pop):
 		for p in range(0, len(pops), 1):
@@ -86,7 +86,7 @@ for line_vcf1 in vcffile:
 				snpid=str(line_vcf[2])
 			else: 
 				snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
-			if snpid in listofsnps:
+			if snpid in allsnplist:
 				counts=extractcounts(options.pop, line_vcf[7], options.maxAC, options.maxAF)
 				count_table[snpid]=[snpid, counts[0], counts[1]]
 vcffile.close()
