@@ -12,7 +12,7 @@ parser.add_option("-o", "--outfile", action="store",dest="outfilename", default=
 parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID") #Field in which to get SNP names. If not VCF ID, then CHR:POS:REF:ALT is used
 parser.add_option("--snpcolname", action="store",dest="snpcolname", default="NA")
 parser.add_option("--samplefile", action="store",dest="samplefilename", default="ALL")
-parser.add_option("--recessive", action="store_true",dest="recessive")
+##parser.add_option("--recessive", action="store_true",dest="recessive")
 parser.add_option("--maxAF", action="store",dest="maxAF", default=1)
 parser.add_option("--maxAC", action="store",dest="maxAC", default=99999)
 parser.add_option("--GTfield", action="store",dest="gtfield", default="GT")
@@ -23,23 +23,6 @@ if not options.snpfilename:   # if filename is not given
 
 if not options.vcffilename:   # if vcf filename is not given
     parser.error('A vcf file is needed')
-
-def findhetcarriers(vcfline, gtname, snplist, snpformat):
-	#Find the column in the genotype field corresponding to the genotypes
-	gtcol=vcfline.split('\t')[8].split(":").index(gtname)
-
-	if snpformat=="VCFID":
-		snpid=vcfline.split('\t')[2]
-	else:
-		snpid=str(vcfline.split('\t')[0]).lstrip("chr")+":"+str(vcfline.split('\t')[1])+":"+str(vcfline.split('\t')[3])+":"+str(vcfline.split('\t')[4])
-	
-	#Extract genotypes 
-	gt=[i.split(':')[gtcol] for i in vcfline.rstrip().split('\t')[9:]]
-
-	#Find carriers
-	carriers=[i for i,val in enumerate(gt) if str(val) in ["0/1", "1/0", "1/1","0|1", "1|0", "1|1"]]
-
-	return carriers
 
 def findcarriers(vcfline, gtname, snpformat, samplelist):
 	#Find the column in the genotype field corresponding to the genotypes
@@ -58,7 +41,6 @@ def findcarriers(vcfline, gtname, snpformat, samplelist):
 	hetcarriers=list(set(hetcarriers) & set(samplelist))
 	homcarriers=[i for i,val in enumerate(gt) if str(val) in ["1/1", "1|1"]]
 	homcarriers=list(set(homcarriers) & set(samplelist))
-##	carriers=hetcarriers+homcarriers+homcarriers
 	return [hetcarriers, homcarriers]
 
 def findsampleindex(vcfline, samplefilename):
@@ -110,15 +92,13 @@ def calculatecount(genesnps, snptable):
         for s in range(0, len(genesnps), 1):
                 if genesnps[s] in snptable:
                         tempsnp=genesnps[s]
-##                        if type(tempsnp) is list:
                         het_index=het_index+snptable[tempsnp][1]
 	                hom_index=hom_index+snptable[tempsnp][2]
-##                        else:
-##                                gt_index.append(tempsnp)
+
 	
 	#Generate number of individuals carrying one variant
-        het_ac=len(set([x for x in het_index if het_index.count(x) == 1])))
-	ch_ac=len(set([x for x in het_index if het_index.count(x) > 1])))
+        het_ac=len(set([x for x in het_index if het_index.count(x) == 1]))
+	ch_ac=len(set([x for x in het_index if het_index.count(x) > 1]))
         hom_ac=len(list(set(hom_index)))
 	return [het_ac, ch_ac, hom_ac]
 
@@ -143,14 +123,9 @@ for line_vcf1 in vcffile:
 		else: 
 			snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
 		if snpid in allsnplist:
-##			if options.recessive:
-##				templist=findhomcarriers(line_vcf1, options.gtfield, listofsnps, options.snpcolname)
-##				count_table[snpid]=[snpid, len(list(set(sampleindices) & set([x for x in templist if templist.count(x) > 1])))]
-##			else:
-##				templist=findhetcarriers(line_vcf1, options.gtfield, listofsnps, options.snpcolname)
-##				count_table[snpid]=[snpid, list(set(sampleindices) & set(templist))]
-				counts=findcarriers(line_vcf1, options.gtfield, options.snpcolname, sampleindices)
-				count_table[snpid]=[snpid, counts[0], counts[1]]
+			count_table[snpid]=[snpid, list(set(sampleindices) & set(templist))]
+			counts=findcarriers(line_vcf1, options.gtfield, options.snpcolname, sampleindices)
+			count_table[snpid]=[snpid, counts[0], counts[1]]
 		
 	#Find indices of samples in the sample file
 	elif line_vcf[0]=="#CHROM":
@@ -165,7 +140,6 @@ snpfile=open(options.snpfilename, "r")
 for line_s1 in snpfile:
 	line_s=line_s1.rstrip('\n').split('\t')
 	if line_s[0]!="GENE":
-		#snplist=list(set(line_s[1].split(',')))
 		snplist=list(set(line_s[1].split(',')))
 		counts=calculatecount(snplist, count_table)
 		outfile.write(line_s[0]+"\t"+str(counts[0])+"\t"+str(counts[1])+"\t"+str(counts[2])+'\n')
