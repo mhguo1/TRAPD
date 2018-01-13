@@ -10,9 +10,12 @@ parser.add_option("-v", "--vcffile", action="store",dest="vcffilename") #Path to
 parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="out.txt") #Output file name 
 
 parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID") #Field in which to get SNP names. If not VCF ID, then CHR:POS:REF:ALT is used
-parser.add_option("--snpcolname", action="store",dest="snpcolname", default="NA")
+##parser.add_option("--snpcolname", action="store",dest="snpcolname", default="NA")
 parser.add_option("--samplefile", action="store",dest="samplefilename", default="ALL")
 ##parser.add_option("--recessive", action="store_true",dest="recessive")
+
+#Optional Filters
+parser.add_option("--pass", action="store_true", dest="passfilter")
 parser.add_option("--maxAF", action="store",dest="maxAF", default=1)
 parser.add_option("--maxAC", action="store",dest="maxAC", default=99999)
 parser.add_option("--GTfield", action="store",dest="gtfield", default="GT")
@@ -72,14 +75,16 @@ def makesnplist(snpfile, snpcolname):
 		line_snp=line_snp1.rstrip('\n').split('\t')
 
 		#Find column corresponding to desired snps
-		if line_snp[0]=="GENE":
-			if snpcolname!="NA":
-				snpcol=line_snp.index(snpcolname)
-			else:
-				snpcol=1
-		elif len(line_snp[snpcol])>1:
-			#Add SNPs to list
+		if line_snp[0]!="GENE":
 			snplist=snplist+line_snp[snpcol].split(",")
+##		if line_snp[0]=="GENE":
+##			if snpcolname!="NA":
+##				snpcol=line_snp.index(snpcolname)
+##			else:
+##				snpcol=1
+##		elif len(line_snp[snpcol])>1:
+##			#Add SNPs to list
+##			snplist=snplist+line_snp[snpcol].split(",")
 
 	return set(snplist)
 	snp_file.close()
@@ -134,14 +139,14 @@ for line_vcf1 in vcffile:
 vcffile.close()
 
 
-#Write output
+#Generate output counts
 outfile=open(options.outfilename, "w")
 snpfile=open(options.snpfilename, "r")
 for line_s1 in snpfile:
 	line_s=line_s1.rstrip('\n').split('\t')
 	if line_s[0]!="GENE":
-		snplist=list(set(line_s[1].split(',')))
-		counts=calculatecount(snplist, count_table)
+		genesnplist=list(set(line_s[1].split(',')))
+		counts=calculatecount(genesnplist, count_table)
 		outfile.write(line_s[0]+"\t"+str(counts[0])+"\t"+str(counts[1])+"\t"+str(counts[2])+'\n')
 outfile.close()
 snpfile.close()
