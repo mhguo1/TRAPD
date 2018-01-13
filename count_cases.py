@@ -55,9 +55,9 @@ def findhomcarriers(vcfline, gtname, snplist, snpformat):
 
 	#Find carriers
 	hetcarriers=[i for i,val in enumerate(gt) if str(val) in ["0/1", "1/0", "0|1", "1|0"]]
-	homcarriers=[i for i,val in enumerate(gt) if str(val) in ["0/1", "1/0","1/1", "0|1", "1|0", "1|1"]]
+	homcarriers=[i for i,val in enumerate(gt) if str(val) in ["1/1", "1|1"]]
 	carriers=hetcarriers+homcarriers+homcarriers
-	return carriers
+	return [hetcarriers, homcarriers]
 
 def findsampleindex(vcfline, samplefilename):
 	#This takes the vcf header line and finds the indices corresponding to the individuals present in the sample file
@@ -97,7 +97,7 @@ def makesnplist(snpfile, snpcolname):
 			#Add SNPs to list
 			snplist=snplist+line_snp[snpcol].split(",")
 
-	return snplist
+	return set(snplist)
 	snp_file.close()
 
 
@@ -115,7 +115,8 @@ def calculatecount(genesnps, snptable):
         return ac
 
 #Make list of all SNPs across all genes present in snpfile
-listofsnps=makesnplist(options.snpfilename, options.snpcolname)
+allsnplist=makesnplist(options.snpfilename, options.snpcolname)
+
 
 #Make a hashtable with keys as each SNP, and stores a list of indices of carriers for that SNP
 count_table={} 
@@ -134,11 +135,11 @@ for line_vcf1 in vcffile:
 			snpid=str(line_vcf[2])
 		else: 
 			snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
-		if snpid in listofsnps:
-			if options.recessive:
-				templist=findhomcarriers(line_vcf1, options.gtfield, listofsnps, options.snpcolname)
-				count_table[snpid]=[snpid, len(list(set(sampleindices) & set([x for x in templist if templist.count(x) > 1])))]
-			else:
+		if snpid in allsnplist:
+##			if options.recessive:
+##				templist=findhomcarriers(line_vcf1, options.gtfield, listofsnps, options.snpcolname)
+##				count_table[snpid]=[snpid, len(list(set(sampleindices) & set([x for x in templist if templist.count(x) > 1])))]
+##			else:
 				templist=findhetcarriers(line_vcf1, options.gtfield, listofsnps, options.snpcolname)
 				count_table[snpid]=[snpid, list(set(sampleindices) & set(templist))]
 	
