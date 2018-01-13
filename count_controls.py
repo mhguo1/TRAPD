@@ -42,19 +42,19 @@ def makesnplist(snpfile):
 	return set(snplist)
 	snp_file.close()
 
-def extractcounts(pops, vcfline):
-	ac_out=0
-	ac_hom_out=0
-	af_out=0
-	if (options.pop is None) or ("ALL" in options.pop):
-		ac_out=(";"+vcfline).split((";AC="))[1].split(";")[0]
-		ac_hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0]
-	else:
+def extractcounts(pops, vcfline, max_ac, max_af):
+	ac_out=(";"+vcfline).split((";AC="))[1].split(";")[0]
+	af_out=(";"+vcfline).split((";AF="))[1].split(";")[0]
+	ac_hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0]
+
+	if (ac_file>max_ac) or (af_file>max_af):
+		return [[],[]]
+	elif (options.pop is not None) or ("ALL" not in options.pop):
 		for p in range(0, len(pops), 1):
 			temp_pop=pops[p]
 			ac_out=ac_out+int((";"+vcfline).split((";AC"+pop+"="))[1].split(";")[0])
 			ac_hom_out=ac_hom_out+int((";"+vcfline).split((";Hom_"+pop+"="))[1].split(";")[0])
-	return [ac_out, ac_hom_out]
+		return [ac_out, ac_hom_out]
 
 
 def sumcount(snplist, snptable):
@@ -74,7 +74,7 @@ allsnplist=makesnplist(options.snpfilename)
 count_table={} 
 
 #Open vcf file
-if str(options.filename)[-3:]==".gz":
+if str(options.vcffilename)[-3:]==".gz":
 	vcffile=gzip.open(options.vcffilename, "rb")
 else:
 	vcffile=open(options.vcffilename, "r")
@@ -87,7 +87,7 @@ for line_vcf1 in vcffile:
 			else: 
 				snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
 			if snpid in listofsnps:
-				counts=extractcounts(options.pop, line_vcf[7])
+				counts=extractcounts(options.pop, line_vcf[7], options.maxAC, options.maxAF)
 				count_table[snpid]=[snpid, counts[0], counts[1]]
 vcffile.close()
 
