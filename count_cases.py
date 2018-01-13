@@ -41,7 +41,7 @@ def findhetcarriers(vcfline, gtname, snplist, snpformat):
 
 	return carriers
 
-def findhomcarriers(vcfline, gtname, snplist, snpformat):
+def findcarriers(vcfline, gtname, snpformat, samplelist):
 	#Find the column in the genotype field corresponding to the genotypes
 	gtcol=vcfline.split('\t')[8].split(":").index(gtname)
 
@@ -55,8 +55,10 @@ def findhomcarriers(vcfline, gtname, snplist, snpformat):
 
 	#Find carriers
 	hetcarriers=[i for i,val in enumerate(gt) if str(val) in ["0/1", "1/0", "0|1", "1|0"]]
+	hetcarriers=list(set(hetcarriers) & set(samplelist))
 	homcarriers=[i for i,val in enumerate(gt) if str(val) in ["1/1", "1|1"]]
-	carriers=hetcarriers+homcarriers+homcarriers
+	homcarriers=list(set(homcarriers) & set(samplelist))
+##	carriers=hetcarriers+homcarriers+homcarriers
 	return [hetcarriers, homcarriers]
 
 def findsampleindex(vcfline, samplefilename):
@@ -103,20 +105,25 @@ def makesnplist(snpfile, snpcolname):
 
 def calculatecount(genesnps, snptable):
 	#This will generate an aggregate count for a given gene.
-        gt_index=[]
+        het_index=[]
+	hom_index=[]
         for s in range(0, len(genesnps), 1):
                 if genesnps[s] in snptable:
                         tempsnp=genesnps[s]
-                        if type(tempsnp) is list:
-                                gt_index=gt_index+snptable[tempsnp][1]
-                        else:
-                                gt_index.append(tempsnp)
-        ac=len(list(set(gt_index)))
-        return ac
+##                        if type(tempsnp) is list:
+                          het_index=het_index+snptable[tempsnp][1]
+	                  hom_index=hom_index+snptable[tempsnp][2]
+##                        else:
+##                                gt_index.append(tempsnp)
+	
+	#Generate number of individuals carrying one variant
+        het_ac=len(set([x for x in het_index if het_index.count(x) == 1])))
+	ch_ac=len(set([x for x in het_index if het_index.count(x) > 1])))
+        hom_ac=len(list(set(hom_index)))
+	return [het_ac, ch_ac, hom_ac]
 
 #Make list of all SNPs across all genes present in snpfile
 allsnplist=makesnplist(options.snpfilename, options.snpcolname)
-
 
 #Make a hashtable with keys as each SNP, and stores a list of indices of carriers for that SNP
 count_table={} 
@@ -140,9 +147,11 @@ for line_vcf1 in vcffile:
 ##				templist=findhomcarriers(line_vcf1, options.gtfield, listofsnps, options.snpcolname)
 ##				count_table[snpid]=[snpid, len(list(set(sampleindices) & set([x for x in templist if templist.count(x) > 1])))]
 ##			else:
-				templist=findhetcarriers(line_vcf1, options.gtfield, listofsnps, options.snpcolname)
-				count_table[snpid]=[snpid, list(set(sampleindices) & set(templist))]
-	
+##				templist=findhetcarriers(line_vcf1, options.gtfield, listofsnps, options.snpcolname)
+##				count_table[snpid]=[snpid, list(set(sampleindices) & set(templist))]
+				counts=findcarriers(line_vcf1, options.gtfield, options.snpcolname, sampleindices)
+				count_table[snpid]=[snpid, counts[0], counts[1]]
+		
 	#Find indices of samples in the sample file
 	elif line_vcf[0]=="#CHROM":
 		sampleindices=findsampleindex(line_vcf1, options.samplefilename)
@@ -157,9 +166,9 @@ for line_s1 in snpfile:
 	line_s=line_s1.rstrip('\n').split('\t')
 	if line_s[0]!="GENE":
 		#snplist=list(set(line_s[1].split(',')))
-		snplist=line_s[1].split(',')
-		count=calculatecount(snplist, count_table)
-		outfile.write(line_s[0]+"\t"+str(count)+'\n')
+		snplist=list(set(line_s[1].split(',')))
+		counts=calculatecount(snplist, count_table)
+		outfile.write(line_s[0]+"\t"+str(counts[0])+"\t"+str(counts[1])+"\t"+str(counts[2])+'\n')
 outfile.close()
 snpfile.close()
 
