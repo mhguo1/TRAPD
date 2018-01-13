@@ -68,7 +68,7 @@ def sumcount(snplist, snptable):
 	return [ac_sum, ac_hom_sum]
 
 #Make list of all SNPs across all genes present in snpfile
-allsnplist=makesnplist(options.snpfilename, options.snpcolname)
+allsnplist=makesnplist(options.snpfilename)
 
 #Make a hashtable with keys as each SNP, and stores a list of indices of carriers for that SNP
 count_table={} 
