@@ -27,24 +27,31 @@ if not options.snpfilename:   # if filename is not given
 if not options.vcffilename:   # if vcf filename is not given
     parser.error('A vcf file is needed')
 
-def findcarriers(vcfline, gtname, snpformat, samplelist):
+def findcarriers(vcfline, gtname, snpformat, samplelist, max_ac, max_af):
 	#Find the column in the genotype field corresponding to the genotypes
-	gtcol=vcfline.split('\t')[8].split(":").index(gtname)
+	gtcol=vcfline[8].split(":").index(gtname)
 
 	if snpformat=="VCFID":
-		snpid=vcfline.split('\t')[2]
+		snpid=vcfline[2]
 	else:
-		snpid=str(vcfline.split('\t')[0]).lstrip("chr")+":"+str(vcfline.split('\t')[1])+":"+str(vcfline.split('\t')[3])+":"+str(vcfline.split('\t')[4])
+		snpid=str(vcfline[0]).lstrip("chr")+":"+str(vcfline[1])+":"+str(vcfline[3])+":"+str(vcfline[4])
 	
 	#Extract genotypes 
-	gt=[i.split(':')[gtcol] for i in vcfline.rstrip().split('\t')[9:]]
+	gt=[i.split(':')[gtcol] for i in vcfline[9:]]
 
 	#Find carriers
-	hetcarriers=[i for i,val in enumerate(gt) if str(val) in ["0/1", "1/0", "0|1", "1|0"]]
-	hetcarriers=list(set(hetcarriers) & set(samplelist))
-	homcarriers=[i for i,val in enumerate(gt) if str(val) in ["1/1", "1|1"]]
-	homcarriers=list(set(homcarriers) & set(samplelist))
-	return [hetcarriers, homcarriers]
+	hets=[i for i,val in enumerate(gt) if str(val) in ["0/1", "1/0", "0|1", "1|0"]]
+	hetcarriers=list(set(hets) & set(samplelist))
+	homs=[i for i,val in enumerate(gt) if str(val) in ["1/1", "1|1"]]
+	homcarriers=list(set(homs) & set(samplelist))
+	
+	ac_file=(float(len(hets)+2*len(homs)))
+	af_file=ac_file/(float(len(vcfline)-9))
+	
+	if (ac_file>max_ac) or (af_file>max_af):
+		return [[],[]]
+	else:
+		return [hetcarriers, homcarriers]
 
 def findsampleindex(vcfline, samplefilename):
 	#This takes the vcf header line and finds the indices corresponding to the individuals present in the sample file
@@ -65,7 +72,7 @@ def findsampleindex(vcfline, samplefilename):
 		sampleindex=[i for i,val in enumerate(samplenames) if str(val) in samplelist]
 	return sampleindex
 
-def makesnplist(snpfile, snpcolname):
+def makesnplist(snpfile):
 	#Makes a list of SNPs present in the snpfile
 	snplist=[]
 	#Read in snpfile
@@ -76,16 +83,7 @@ def makesnplist(snpfile, snpcolname):
 
 		#Find column corresponding to desired snps
 		if line_snp[0]!="GENE":
-			snplist=snplist+line_snp[snpcol].split(",")
-##		if line_snp[0]=="GENE":
-##			if snpcolname!="NA":
-##				snpcol=line_snp.index(snpcolname)
-##			else:
-##				snpcol=1
-##		elif len(line_snp[snpcol])>1:
-##			#Add SNPs to list
-##			snplist=snplist+line_snp[snpcol].split(",")
-
+			snplist=snplist+line_snp[1].split(",")
 	return set(snplist)
 	snp_file.close()
 
@@ -123,14 +121,15 @@ else:
 for line_vcf1 in vcffile:
 	line_vcf=line_vcf1.rstrip().split('\t')
 	if line_vcf[0][0]!="#":
-		if options.snpformat=="VCF":
-			snpid=str(line_vcf[2])
-		else: 
-			snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
-		if snpid in allsnplist:
-			count_table[snpid]=[snpid, list(set(sampleindices) & set(templist))]
-			counts=findcarriers(line_vcf1, options.gtfield, options.snpcolname, sampleindices)
-			count_table[snpid]=[snpid, counts[0], counts[1]]
+		if not (options.passfilter and line_vcf[6]!="PASS"):
+			if options.snpformat=="VCF":
+				snpid=str(line_vcf[2])
+			else: 
+				snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
+			if snpid in allsnplist:
+##				count_table[snpid]=[snpid, list(set(sampleindices) & set(templist))]
+				counts=findcarriers(line_vcf, options.gtfield, options.snpformat, sampleindices, options.maxAC, options.maxAF)
+				count_table[snpid]=[snpid, counts[0], counts[1]]
 		
 	#Find indices of samples in the sample file
 	elif line_vcf[0]=="#CHROM":
