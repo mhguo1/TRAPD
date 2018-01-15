@@ -38,7 +38,12 @@ if not options.vcffilename:   # if filename is not given
 if (options.includevep is not None) or (options.excludevep is not None):
 	if not options.vep:
 		parser.error('--vep option must be supplied if using VEP annotations)
+			     
+if  options.snpformat!="VCFID" and options.snpformat!="CHRPOSREFALT":   # if filename is not given
+    parser.error('SNP format must be "VCFID" or "CHRPOSREFALT"')
 
+			     
+#Test if something is a number
 def is_number(s):
     try:
         float(s)
