@@ -56,7 +56,7 @@ Variants that are kept will meet ALL criteria supplied!
 --includeinfo "BIOTYPE[=]protein_coding" #Include variants where the VEP CSQ consequence is protein_coding
 --excludeinfo "consequence[=]synonymous" #Exclude variants where the VEP CSQ consequence is synonymous
 
-3) --snpformat: Format for SNPs. Default is "CHRPOSREFALT". Your SNPs may be defined in any one of two ways. The default is the use chr:pos:ref:alt (e.g., 1:1000:A:T). If you supply the option "VCFID", then the program will use the VCF variant name in column 3 of your vcf (often rsIDs).
+3) --snpformat: Format for SNPs. Default is "VCFID". Your SNPs may be defined in any one of two ways.  If you supply the option "VCFID", then the program will use the VCF variant name in column 3 of your vcf (often rsIDs). Alternatively, you may supply "CHRPOSREFALT", in which case variants will be formatted as chr:pos:ref:alt (e.g., 1:1000:A:T).
 
 5) --bedfile: Path to a bed file for regions of interest. Only regions that are inside the bedfile defined regions will be kept. If this option is not supplied, then the entire VCF will be used. Caution that if your chromosome names start in "chr" (e.g., "chr1"), then your bed file should be formatted similarly.
 
