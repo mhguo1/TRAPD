@@ -97,7 +97,7 @@ outfile=open(options.outfilename, "w")
 snpfile=open(options.snpfilename, "r")
 for line_s1 in snpfile:
 	line_s=line_s1.rstrip('\n').split('\t')
-	if line_s[0]!="GENE":
+	if line_s[0][0]!="#":
 		genesnplist=list(set(line_s[1].split(',')))
 		sumcounts=sumcount(genesnplist, count_table)
 		outfile.write(line_s[0]+"\t"+str(sumcounts[0])+"\t"+str(sumcounts[1])+'\n')
