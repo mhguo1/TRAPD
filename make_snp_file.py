@@ -34,6 +34,9 @@ options, args = parser.parse_args()
 if not options.vcffilename:   # if filename is not given
     parser.error('A vcf file is needed')
 
+if options.vcffilename.endswith(".gz") is False:   # if vcf filename is not given
+    parser.error('Is your vcf file gzipped?')
+
 if (options.includevep is not None) or (options.excludevep is not None):
 	if not options.vep:
 		parser.error('--vep option must be supplied if using VEP annotations')
@@ -119,10 +122,7 @@ snptable={}
 
 #Read in vcf header to get VEP CSQ fields
 if options.vep:
-	if str(options.vcffilename)[-3:]==".gz":
-		vcffile=gzip.open(options.vcffilename, "rb")
-  	else:
-		vcffile=open(options.vcffilename, "r")
+	vcffile=gzip.open(options.vcffilename, "rb")
 	csq_found=0
 	for line_vcf1 in vcffile:
 		if line_vcf1[0]=="#" and ("ID=CSQ" in line_vcf1):
