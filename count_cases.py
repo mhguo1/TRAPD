@@ -21,12 +21,19 @@ parser.add_option("--maxAC", action="store",dest="maxAC", default=99999)
 parser.add_option("--GTfield", action="store",dest="gtfield", default="GT")
 
 options, args = parser.parse_args()
+
+#Try to catch potential errors
 if not options.snpfilename:   # if filename is not given
     parser.error('A file containing a list of SNPs is needed')
 
 if not options.vcffilename:   # if vcf filename is not given
     parser.error('A vcf file is needed')
 
+if options.vcffilename.endswith(".gz") is False:   # if vcf filename is not given
+    parser.error('Is your vcf file gzipped?')
+
+
+#Functions
 def findcarriers(vcfline, gtname, snpformat, samplelist, max_ac, max_af):
 	#Find the column in the genotype field corresponding to the genotypes
 	gtcol=vcfline[8].split(":").index(gtname)
@@ -112,11 +119,7 @@ allsnplist=makesnplist(options.snpfilename)
 count_table={} 
 
 #Open vcf file
-if str(options.vcffilename)[-3:]==".gz":
-	vcffile=gzip.open(options.vcffilename, "rb")
-else:
-	vcffile=open(options.vcffilename, "r")
-
+vcffile=gzip.open(options.vcffilename, "rb")
 
 for line_vcf1 in vcffile:
 	line_vcf=line_vcf1.rstrip().split('\t')
@@ -127,14 +130,12 @@ for line_vcf1 in vcffile:
 			else: 
 				snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
 			if snpid in allsnplist:
-##				count_table[snpid]=[snpid, list(set(sampleindices) & set(templist))]
 				counts=findcarriers(line_vcf, options.gtfield, options.snpformat, sampleindices, options.maxAC, options.maxAF)
 				count_table[snpid]=[snpid, counts[0], counts[1]]
 		
 	#Find indices of samples in the sample file
 	elif line_vcf[0]=="#CHROM":
 		sampleindices=findsampleindex(line_vcf1, options.samplefilename)
-
 vcffile.close()
 
 
@@ -143,7 +144,7 @@ outfile=open(options.outfilename, "w")
 snpfile=open(options.snpfilename, "r")
 for line_s1 in snpfile:
 	line_s=line_s1.rstrip('\n').split('\t')
-	if line_s[0]!="GENE":
+	if line_s[0][0]!="#":
 		genesnplist=list(set(line_s[1].split(',')))
 		counts=calculatecount(genesnplist, count_table)
 		outfile.write(line_s[0]+"\t"+str(counts[0])+"\t"+str(counts[1])+"\t"+str(counts[2])+'\n')
