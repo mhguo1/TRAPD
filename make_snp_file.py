@@ -31,6 +31,7 @@ parser.add_option("--genenull", action="store", dest="genenull", default=".,NA")
 
 options, args = parser.parse_args()
 
+#Try to catch potential errors
 if not options.vcffilename:   # if filename is not given
     parser.error('A vcf file is needed')
 
