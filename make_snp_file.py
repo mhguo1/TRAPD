@@ -41,6 +41,9 @@ if (options.includevep is not None) or (options.excludevep is not None):
 if  options.snpformat!="VCFID" and options.snpformat!="CHRPOSREFALT":   # if filename is not given
     parser.error('SNP format must be "VCFID" or "CHRPOSREFALT"')
 
+if options.snponly and options.indelonly:
+	parser.error('Please select only --snponly or --indelonly')
+
 			     
 #Test if something is a number
 def is_number(s):
@@ -49,6 +52,7 @@ def is_number(s):
         return True
     except ValueError:
         return False
+
 
 #Need a better way to handle things in case field is not found in that given line
 def test_include_info(filter, vcfline):
@@ -121,14 +125,14 @@ if options.vep:
 		vcffile=open(options.vcffilename, "r")
 	csq_found=0
 	for line_vcf1 in vcffile:
-		if line_vcf1[0]=="#" and ( "ID=CSQ" in line_vcf1):
+		if line_vcf1[0]=="#" and ("ID=CSQ" in line_vcf1):
 			csq_anno=line_vcf1.rstrip('\n').rstrip("\">").split("Format: ")[1].split("|")
 			csq_found=1
 			break
 	if csq_found==0:
 		sys.stdout.write("VEP CSQ annotations not found in vcf header\n")
 	vcffile.close()
-
+	
 
 #Open vcf file
 vcffile=BedTool(options.vcffilename)
@@ -137,30 +141,30 @@ if options.bedfilename is not None:
 	bed=BedTool(options.bedfilename)
 	vcffile=vcffile.intersect(bed)
 
-for line_vcf1 in open(vcffile.fn):
+for line_vcf1 in gzip.open(vcffile.fn):
 	line_vcf=line_vcf1.rstrip().split('\t')
 	keep=1
 	
 	if line_vcf[0][0]!="#":
-		if options.passfilter:
+		if keep==1 and options.passfilter:
 			if line_vcf[6]!="PASS":
 				keep=0
-		if options.snponly:
+		if keep==1 and options.snponly:
 			if len(line_vcf[3])>1 or len(line_vcf[4])>1:
-			keep==0
-		if options.indelonly:
+				keep==0
+		if keep==1 and options.indelonly:
 			if len(line_vcf[3])==1 and len(line_vcf[4])==1:
 				keep==0
   
  #Go through INFO field filters
-		if options.includeinfo is not None:
+		if keep==1 and options.includeinfo is not None:
 			iter=0
 			while keep==1 and iter<len(options.includeinfo):
 				filter=options.includeinfo[iter]
 				keep=test_include_info(filter, line_vcf[7])
 				iter=iter+1
         
-		if options.excludeinfo is not None:
+		if keep==1 and options.excludeinfo is not None:
 			iter=0
 			while keep==1 and iter<len(options.excludeinfo):
 				filter=options.excludeinfo[iter]
@@ -168,14 +172,14 @@ for line_vcf1 in open(vcffile.fn):
 				iter=iter+1
   
    #Go through INFO/VEP field filters
-		if options.includevep is not None:
+		if keep==1 and options.includevep is not None:
 			iter=0
 			while keep==1 and iter<len(options.includevep):
 				filter=options.includevep[iter]
 				keep=test_include_vep(filter, line_vcf[7], csq_anno)
 				iter=iter+1
         
-		if options.excludevep is not None:
+		if keep==1 and options.excludevep is not None:
 			iter=0
 			while keep==1 and iter<len(options.excludevep):
 				filter=options.excludevep[iter]
