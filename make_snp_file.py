@@ -12,6 +12,7 @@ from pybedtools import BedTool
 parser = optparse.OptionParser()
 parser.add_option("-v", "--vcffile", action="store",dest="vcffilename")
 parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="snpfile.txt")
+parser.add_option("--genecolname", action="store", dest="genecolname")
 
 #Filters
 parser.add_option("--includeinfo", action="append",dest="includeinfo")
@@ -25,18 +26,19 @@ parser.add_option("--indelonly", action="store_true", dest="indelonly")
 parser.add_option("--bedfile", action="store", dest="bedfilename")
 
 parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID")
-parser.add_option("--genecolname", action="store", dest="genecolname")
-parser.add_option("--snpcolname", action="store", dest="snpcolname", default="SNP")
 parser.add_option("--genenull", action="store", dest="genenull", default=".,NA")
 
 options, args = parser.parse_args()
 
 #Try to catch potential errors
 if not options.vcffilename:   # if filename is not given
-    parser.error('A vcf file is needed')
+	    parser.error('A vcf file is needed')
 
 if options.vcffilename.endswith(".gz") is False:   # if vcf filename is not given
-    parser.error('Is your vcf file gzipped?')
+	parser.error('Is your vcf file gzipped?')
+
+if not options.genecolname:
+	parser.error('An INFO field with the gene names to use must be provided')
 
 if (options.includevep is not None) or (options.excludevep is not None):
 	if not options.vep:
@@ -58,45 +60,56 @@ def is_number(s):
         return False
 
 
-#Need a better way to handle things in case field is not found in that given line
 def test_include_info(filter, vcfline):
         option_field=filter.split("[")[0]
         option_value=float(filter.split("]")[1])
-        field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
-        if get_operator_fn(filter.split("[")[1].split("]")[0])(float(field_value), float(option_value)):
+	if option_field in vcfline:
+       		field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
+        	if get_operator_fn(filter.split("[")[1].split("]")[0])(float(field_value), float(option_value)):
+			return 1
+        	else:
+                	return 0
+	else:
 		return 1
-        else:
-                return 0
 
 def test_exclude_info(filter, vcfline):
         option_field=filter.split("[")[0]
         option_value=float(filter.split("]")[1])
-        field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
-        if get_operator_fn(filter.split("[")[1].split("]")[0])(float(field_value), float(option_value)):
-		return 0
-        else:
-                return 1
+	if option_field in vcfline:
+        	field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
+        	if get_operator_fn(filter.split("[")[1].split("]")[0])(float(field_value), float(option_value)):
+			return 0
+        	else:
+               		return 1
+	else:
+		return 1
 
 def test_include_vep(filter, vcfline, csq_anno):
 	csq_index=csq_anno.index(filter)
         option_field=filter.split("[")[0]
         option_value=filter.split("]")[1]
-        field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0].split("|")[csq_index]
-        if get_operator_fn(filter.split("[")[1].split("]")[0])(float(field_value), float(option_value)):
-                return 1
-        else:
-                return 0
+	if option_field in vcfline:
+        	field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0].split("|")[csq_index]
+        	if get_operator_fn(filter.split("[")[1].split("]")[0])(float(field_value), float(option_value)):
+        	        return 1
+      		else:
+                	return 0
+	else:
+		return 1
 
 
 def test_exclude_vep(filter, vcfline, csq_anno):
         csq_index=csq_anno.index(filter)
         option_field=filter.split("[")[0]
         option_value=filter.split("]")[1]
-        field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0].split("|")[csq_index]
-        if get_operator_fn(filter.split("[")[1].split("]")[0])(float(field_value), float(option_value)):
-                return 1
-        else:
-                return 0
+	if option_field in vcfline:
+        	field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0].split("|")[csq_index]
+        	if get_operator_fn(filter.split("[")[1].split("]")[0])(float(field_value), float(option_value)):
+             		return 0
+        	else:
+                	return 1
+	else:
+		return 1
 
 def find_vep_gene(genecolname, vcfline, csq_anno):
         csq_index=csq_anno.index(genecolname)
@@ -133,6 +146,12 @@ if options.vep:
 	if csq_found==0:
 		sys.stdout.write("VEP CSQ annotations not found in vcf header\n")
 	vcffile.close()
+
+##Needs heavy editing still
+##Check vcf header to make sure INFO fields are present
+##vcffile=gzip.open(options.vcffilename, "rb")	
+##	if options.includevep is not None:
+##		while iter<len(options.includevep):
 	
 
 #Open vcf file
