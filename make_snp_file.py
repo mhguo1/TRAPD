@@ -45,7 +45,7 @@ if (options.includevep is not None) or (options.excludevep is not None):
 		parser.error('--vep option must be supplied if using VEP annotations')
 			     
 if  options.snpformat!="VCFID" and options.snpformat!="CHRPOSREFALT":   # if filename is not given
-    parser.error('SNP format must be "VCFID" or "CHRPOSREFALT"')
+	parser.error('SNP format must be "VCFID" or "CHRPOSREFALT"')
 
 if options.snponly and options.indelonly:
 	parser.error('Please select only --snponly or --indelonly')
@@ -85,35 +85,30 @@ def test_exclude_info(filter, vcfline):
 		return 1
 
 def test_include_vep(filter, vcfline, csq_anno):
-	csq_index=csq_anno.index(filter)
-        option_field=filter.split("[")[0]
+	option_field=filter.split("[")[0]
+	csq_index=csq_anno.index(option_field)
         option_value=filter.split("]")[1]
-	if option_field in vcfline:
-        	field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0].split("|")[csq_index]
-        	if get_operator_fn(filter.split("[")[1].split("]")[0])(float(field_value), float(option_value)):
-        	        return 1
-      		else:
-                	return 0
-	else:
-		return 1
+	field_value=(";"+vcfline).split((";CSQ="))[1].split(";")[0].split(",")[0].split("|")[csq_index]
+	if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
+                return 1
+      	else:
+               	return 0
+
 
 
 def test_exclude_vep(filter, vcfline, csq_anno):
-        csq_index=csq_anno.index(filter)
         option_field=filter.split("[")[0]
+	csq_index=csq_anno.index(option_field)
         option_value=filter.split("]")[1]
-	if option_field in vcfline:
-        	field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0].split("|")[csq_index]
-        	if get_operator_fn(filter.split("[")[1].split("]")[0])(float(field_value), float(option_value)):
-             		return 0
-        	else:
-                	return 1
-	else:
-		return 1
+	field_value=(";"+vcfline).split((";CSQ="))[1].split(";")[0].split(",")[0].split("|")[csq_index]
+	if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
+        	return 0
+       	else:
+               	return 1
 
 def find_vep_gene(genecolname, vcfline, csq_anno):
         csq_index=csq_anno.index(genecolname)
-        genename=(";"+vcfline).split(";CSQ=")[1].split(",")[0].split(";")[0].split("|")[csq_index]
+        genename=(";"+vcfline).split(";CSQ=")[1].split(";")[0].split(",")[0].split("|")[csq_index]
         return genename
 
 def find_info_gene(genecolname, vcfline):
@@ -127,8 +122,8 @@ def get_operator_fn(op):
 	'<=' : operator.le,
 	'>' : operator.gt,
 	'>=' : operator.gt,
-  '=' : operator.eq,
-  '!=' : operator.ne,
+	'=' : operator.eq,
+	'!=' : operator.ne,
    }[op]
 
 #Create empty snptable
@@ -140,7 +135,8 @@ if options.vep:
 	csq_found=0
 	for line_vcf1 in vcffile:
 		if line_vcf1[0]=="#" and ("ID=CSQ" in line_vcf1):
-			csq_anno=line_vcf1.rstrip('\n').rstrip("\">").split("Format: ")[1].split("|")
+			csq_anno=line_vcf1.rstrip('\n').replace('"', '').strip('>').split("Format: ")[1].split("|")
+			sys.stdout.write('\t'.join(csq_anno)+"\n")
 			csq_found=1
 			break
 	if csq_found==0:
@@ -161,10 +157,10 @@ if options.bedfilename is not None:
 	bed=BedTool(options.bedfilename)
 	vcffile=vcffile.intersect(bed)
 
+##for line_vcf1 in gzip.open(vcffile.fn):
 for line_vcf1 in gzip.open(vcffile.fn):
 	line_vcf=line_vcf1.rstrip().split('\t')
 	keep=1
-	
 	if line_vcf[0][0]!="#":
 		if keep==1 and options.passfilter:
 			if line_vcf[6]!="PASS":
@@ -234,4 +230,4 @@ for x in snptable:
         	outfile.write(str(x)+"\t"+syn_out+"\n")
 outfile.close()
 
-#python make_snp_file.py --outfile test.out.txt --vcffile gnomad.test.vcf.gz --vep --genecolname SYMBOL --snpformat CHRPOSREFALT
+#python make_snp_file.py -o test.out.txt -v gnomad.test.vcf.gz --vep --genecolname SYMBOL --snpformat CHRPOSREFALT --pass --includeinfo "AC[<]5"
