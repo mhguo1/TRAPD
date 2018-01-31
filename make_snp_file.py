@@ -94,8 +94,6 @@ def test_include_vep(filter, vcfline, csq_anno):
       	else:
                	return 0
 
-
-
 def test_exclude_vep(filter, vcfline, csq_anno):
         option_field=filter.split("[")[0]
 	csq_index=csq_anno.index(option_field)
@@ -108,11 +106,15 @@ def test_exclude_vep(filter, vcfline, csq_anno):
 
 def find_vep_gene(genecolname, vcfline, csq_anno):
         csq_index=csq_anno.index(genecolname)
-        genename=(";"+vcfline).split(";CSQ=")[1].split(";")[0].split(",")[0].split("|")[csq_index]
+        if "CSQ" in vcfline:
+                genename=(";"+vcfline).split(";CSQ=")[1].split(";")[0].split(",")[0].split("|")[csq_index]
+        else:
+                genename=""
         return genename
 
 def find_info_gene(genecolname, vcfline):
-        genename=(";"+vcfline).split(";"+genecolname+"=")[1].split(";")[0]
+	if genecolname in vcfile:		
+        	genename=(";"+vcfline).split(";"+genecolname+"=")[1].split(";")[0]
         return genename
 	
 #Function to match operator strings
@@ -140,7 +142,13 @@ if options.vep:
 			break
 	if csq_found==0:
 		sys.stdout.write("VEP CSQ annotations not found in vcf header\n")
+		sys.exit()
 	vcffile.close()
+
+if options.vep:
+	if options.genecolname not in csq_anno):
+	sys.stdout.write("Gene column name not found in VEP annotations\n")
+	sys.exit()
 
 ##Needs heavy editing still
 ##Check vcf header to make sure INFO fields are present
