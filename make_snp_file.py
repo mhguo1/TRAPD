@@ -100,7 +100,7 @@ def test_exclude_vep(filter, vcfline, csq_anno):
         option_field=filter.split("[")[0]
 	csq_index=csq_anno.index(option_field)
         option_value=filter.split("]")[1]
-	field_value=(";"+vcfline).split((";CSQ="))[1].split(";")[0].split(",")[0].split("|")[csq_index]
+	field_value=(";"+vcfline).split(";CSQ=")[1].split(";")[0].split(",")[0].split("|")[csq_index]
 	if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
         	return 0
        	else:
@@ -136,7 +136,6 @@ if options.vep:
 	for line_vcf1 in vcffile:
 		if line_vcf1[0]=="#" and ("ID=CSQ" in line_vcf1):
 			csq_anno=line_vcf1.rstrip('\n').replace('"', '').strip('>').split("Format: ")[1].split("|")
-			sys.stdout.write('\t'.join(csq_anno)+"\n")
 			csq_found=1
 			break
 	if csq_found==0:
