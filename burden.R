@@ -10,7 +10,7 @@ parser$add_argument("--controlsize", action="store", type="integer")
 parser$add_argument("--outfile", action="store")
 
 args <- parser$parse_args()
-args$casesize+args$controlsize
+#args$casesize+args$controlsize
 
 case.dat<-read.delim(args$casefile, header=T, stringsAsFactors=F, sep="\t")
 names(case.dat)[1]<-"GENE"
@@ -24,12 +24,8 @@ dat$P_DOM<-0
 dat$P_REC<-0
 
 for(i in 1:nrow(dat)){
-  case_count_dom<-dat[i,]$CASE_COUNT_ALL
-  control_count_dom<-dat[i,]$CONTROL_AC_ALL
-  mat<-cbind(c(dat[i,]$CASE_COUNT_ALL, args$casesize-dat[i,]$CASE_COUNT_ALL), c(dat[i,]$CONTROL_AC_ALL, args$casesize-dat[i,]$CONTROL_AC_ALL))
+  mat<-cbind(c(dat[i,]$CASE_COUNT_ALL, (args$casesize-dat[i,]$CASE_COUNT_ALL)), c(dat[i,]$CONTROL_AC_ALL, (args$controlsize-dat[i,]$CONTROL_AC_ALL)))
   dat[i,]$P_DOM<-fisher.test(mat, alternative="greater")$p.value
 }
 
-
-
-##Rscript test.R --casesize 2 --controlsize 3
+write.table(x=dat,file=args$outfile, sep="\t", quote=F, row.names=F, col.names=T)
