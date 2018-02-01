@@ -19,6 +19,16 @@ names(control.dat)[1]<-"GENE"
 dat<-merge(case.dat, control.dat, by="GENE", all.x=T, all.y=T)
 dat[is.na(dat)]<-0
 
+dat$P_DOM<-0
+dat$P_REC<-0
+
+for(i in 1:nrow(dat)){
+  case_count_dom<-dat[i,]$CASE_COUNT_ALL
+  control_count_dom<-dat[i,]$CONTROL_AC_ALL
+  mat<-cbind(c(dat[i,]$CASE_COUNT_ALL, args$casesize-dat[i,]$CASE_COUNT_ALL), c(dat[i,]$CONTROL_AC_ALL, args$casesize-dat[i,]$CONTROL_AC_ALL))
+  dat[i,]$P_DOM<-fisher.test(mat, alternative="greater")$p.value
+}
+
 
 
 ##Rscript test.R --casesize 2 --controlsize 3
