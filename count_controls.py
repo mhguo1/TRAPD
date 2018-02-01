@@ -9,7 +9,7 @@ parser = optparse.OptionParser()
 #Required Options
 parser.add_option("-s", "--snpfile", action="store",dest="snpfilename")
 parser.add_option("-v", "--vcffile", action="store",dest="vcffilename")
-parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="out.txt")
+parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="case_counts.txt")
 
 parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID")
 parser.add_option("--pop", action="store",dest="pop", default="ALL")
