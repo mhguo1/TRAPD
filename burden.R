@@ -7,6 +7,7 @@ parser$add_argument("--casefile", action="store")
 parser$add_argument("--casesize", action="store", type="integer")
 parser$add_argument("--controlfile", action="store")
 parser$add_argument("--controlsize", action="store", type="integer")
+parser$add_argument("--outfile", action="store")
 
 args <- parser$parse_args()
 args$casesize+args$controlsize
