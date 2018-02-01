@@ -7,7 +7,7 @@ import gzip
 parser = optparse.OptionParser()
 parser.add_option("-s", "--snpfile", action="store",dest="snpfilename") #File matching SNPs to genes
 parser.add_option("-v", "--vcffile", action="store",dest="vcffilename") #Path to vcf file
-parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="out.txt") #Output file name 
+parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="control_counts.txt") #Output file name 
 
 parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID") #Field in which to get SNP names. If not VCF ID, then CHR:POS:REF:ALT is used
 ##parser.add_option("--snpcolname", action="store",dest="snpcolname", default="NA")
@@ -141,6 +141,7 @@ vcffile.close()
 
 #Generate output counts
 outfile=open(options.outfilename, "w")
+outfile.write("#GENE\tHET_COUNT\tCH_COUNT\tHOM_COUNT\n")
 snpfile=open(options.snpfilename, "r")
 for line_s1 in snpfile:
 	line_s=line_s1.rstrip('\n').split('\t')
@@ -152,3 +153,4 @@ outfile.close()
 snpfile.close()
 
 
+#python count_case.py -s test.out.txt -o counts.txt -v test.ihh.vcf.gz --snpformat CHRPOSREFALT
