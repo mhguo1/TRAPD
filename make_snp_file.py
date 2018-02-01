@@ -32,25 +32,59 @@ options, args = parser.parse_args()
 
 #Try to catch potential errors
 if not options.vcffilename:   # if filename is not given
-	    parser.error('A vcf file is needed')
+	parser.error('A vcf file is needed')
+	sys.exit()
 
 if options.vcffilename.endswith(".gz") is False:   # if vcf filename is not given
 	parser.error('Is your vcf file gzipped?')
+	sys.exit()
 
 if not options.genecolname:
 	parser.error('An INFO field with the gene names to use must be provided')
+	sys.exit()
 
 if (options.includevep is not None) or (options.excludevep is not None):
 	if not options.vep:
 		parser.error('--vep option must be supplied if using VEP annotations')
+		sys.exit()
 			     
 if  options.snpformat!="VCFID" and options.snpformat!="CHRPOSREFALT":   # if filename is not given
 	parser.error('SNP format must be "VCFID" or "CHRPOSREFALT"')
+	sys.exit()
 
 if options.snponly and options.indelonly:
 	parser.error('Please select only --snponly or --indelonly')
+	sys.exit()
 
-			     
+#Check to make sure all the filters seem well formed
+def checkfilter(infofilter):
+	if ("[" not in infofilter) or (infofilter.startswith("]")) or (infofilter.endswith("]")) or str(infofilter.split("[")[1].split("]")[0]) not in ["<", ">", "<=", ">=", "=", "!=", "in"]:
+		return 0
+	else:
+		return 1
+	
+if options.includeinfo is not None:
+	for i in range(0, len(options.includeinfo), 1):
+		if checkfilter(options.includeinfo[i])==0:
+			sys.stdout.write(str(options.includeinfo[i])+" is malformed\n")
+			sys.exit()
+if options.excludeinfo is not None:
+	for i in range(0, len(options.excludeinfo), 1):
+		if checkfilter(options.excludeinfo[i])==0:
+			sys.stdout.write(str(options.excludeinfo[i])+" is malformed\n")
+			sys.exit()
+if options.includevep is not None:
+	for i in range(0, len(options.includevep), 1):
+		if checkfilter(options.includevep[i])==0:
+			sys.stdout.write(str(options.includevep[i])+" is malformed\n")
+			sys.exit()
+if options.excludevep is not None:
+	for i in range(0, len(options.excludevep), 1):
+		if checkfilter(options.excludevep[i])==0:
+			sys.stdout.write(str(options.excludevep[i])+" is malformed\n")
+			sys.exit()
+		
+		 
 #Test if something is a number
 def is_number(s):
     try:
@@ -146,9 +180,9 @@ if options.vep:
 	vcffile.close()
 
 if options.vep:
-	if options.genecolname not in csq_anno):
-	sys.stdout.write("Gene column name not found in VEP annotations\n")
-	sys.exit()
+	if options.genecolname not in csq_anno:
+		sys.stdout.write("Gene column name not found in VEP annotations\n")
+		sys.exit()
 
 ##Needs heavy editing still
 ##Check vcf header to make sure INFO fields are present
