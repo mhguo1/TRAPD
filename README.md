@@ -14,7 +14,7 @@ Required Python packages:
 BEDTools (http://bedtools.readthedocs.io/en/latest/) must also be loaded in the environment. 
 
 
-0) Pre-processing:
+**0) Pre-processing:**
 There are several pre-processing steps that are necessary before running TRAPD: 1) Separating multi-allelic variants, 2) left-aligning indels, 3) annotating your vcf. Below, we provide several sample command lines for performing these steps:
 
 	0.1-0.2) Separating multi-allelics and left-aligning indels:
@@ -26,7 +26,7 @@ There are several pre-processing steps that are necessary before running TRAPD: 
 	We highly recommend annotating the case and control data in the same way.
 
 
-1) Creating a SNP file 
+**1) Creating a SNP file**
 A SNP file maps qualifying variants to each gene. Qualifying variants are variants that you think may be pathogenic (usually, rare protein-altering variants). You can create a separate SNP file for your cases and controls, or you can make the same SNP file. The SNP file has two columns: 1) Column 1 is your gene name, and 2) Column 2 is a comma separated list of variants assigned to that gene. A variant can be assigned to multiple genes. The header for this file is: "#GENE SNPS".
 
 To create the SNP file, you must have an annotated vcf from which you define your gene names. The vcf does not need to have any genotypes. 
@@ -84,7 +84,7 @@ Output: The output file will contain two columns: 1) Column 1 will be a list of 
 
 
 
-2a) Counting carriers in case cohort
+**2a) Counting carriers in case cohort**
 This script will tabulate the number of cases carrying qualifying variants in each gene as defined by a SNP file. The script will generate three counts for each gene:
 - CASE_COUNT_HET: # of individuals carrying one (and exactly one) heterozygous qualifying variant in the gene
 - CASE_COUNT_CH: # of individuals carrying at least two heterozygous qualifying variants in the gene
@@ -116,7 +116,7 @@ Additional Options
 
 
 
-2b) Counting carriers in public control cohorts
+**2b) Counting carriers in public control cohorts**
 This script will tabulate the approximate number of controls carrying qualifying variants in each gene as defined by a SNP file. Currently, this script has been configured to run using ExAC (http://exac.broadinstitute.org/downloads) or gnomAD (http://gnomad.broadinstitute.org/) data. The script will generate two counts for each gene:
 - CONTROL_COUNT_HET: Sum of allele counts of heterozygous qualifying variants in a given gene. 
 - CONTROL_COUNT_HOM: Sum of allele counts of homozygous qualifying variants in a given gene. 
