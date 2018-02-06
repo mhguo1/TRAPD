@@ -9,7 +9,7 @@ parser = optparse.OptionParser()
 #Required Options
 parser.add_option("-s", "--snpfile", action="store",dest="snpfilename")
 parser.add_option("-v", "--vcffile", action="store",dest="vcffilename")
-parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="case_counts.txt")
+parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="control_counts.txt")
 
 parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID")
 parser.add_option("--pop", action="store",dest="pop", default="ALL")
@@ -28,10 +28,9 @@ if not options.vcffilename:   # if filename is not given
 
 #Parse populations
 if options.pop is not None:
-	pops=str(options.pops).split(',')
+	pops=str(options.pop).split(',')
 else:
 	pops=["ALL"]
-
 
 def makesnplist(snpfile):
 	#Makes a list of SNPs present in the snpfile
@@ -63,7 +62,6 @@ def extractcounts(pops, vcfline, max_ac, max_af):
 			ac_hom_out=ac_hom_out+int((";"+vcfline).split((";Hom_"+pop+"="))[1].split(";")[0])
 	return [ac_out, 2*ac_hom_out]
 
-
 def sumcount(genesnps, snptable):
 	ac_sum=0
 	ac_hom_sum=0
@@ -79,7 +77,6 @@ allsnplist=makesnplist(options.snpfilename)
 
 #Make a hashtable with keys as each SNP, and stores a list of indices of carriers for that SNP
 count_table={} 
-
 
 #Open vcf file
 vcffile=gzip.open(options.vcffilename, "rb")
