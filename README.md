@@ -119,7 +119,7 @@ Additional Options
 **2b) Counting carriers in public control cohorts**
 This script will tabulate the approximate number of controls carrying qualifying variants in each gene as defined by a SNP file. Currently, this script has been configured to run using ExAC (http://exac.broadinstitute.org/downloads) or gnomAD (http://gnomad.broadinstitute.org/) data. The script will generate two counts for each gene:
 - CONTROL_COUNT_HET: Sum of allele counts of heterozygous qualifying variants in a given gene. 
-- CONTROL_COUNT_HOM: Sum of allele counts of homozygous qualifying variants in a given gene. 
+- CONTROL_COUNT_HOM: Sum of individuals carrying homozygous qualifying variants in a given gene. 
 
 
 Required Options
