@@ -95,16 +95,18 @@ def makesnplist(snpfile):
 
 def calculatecount(genesnps, snptable):
 	#This will generate an aggregate count for a given gene.
-        het_index=[]
+        all_index=[]
+	het_index=[]
 	hom_index=[]
         for s in range(0, len(genesnps), 1):
                 if genesnps[s] in snptable:
                         tempsnp=genesnps[s]
-                        het_index=het_index+snptable[tempsnp][1]
+			het_index=het_index+snptable[tempsnp][1]
 	                hom_index=hom_index+snptable[tempsnp][2]
-
+	all_index=het_index+hom_index
+			
 	#Generate number of individuals carrying one variant
-        count_het=len(set([x for x in het_index if het_index.count(x) == 1]))
+        count_het=len(set([x for x in all_index if all_index.count(x) > 1]))
 	count_ch=len(set([x for x in het_index if het_index.count(x) > 1]))
         count_hom=len(list(set(hom_index)))
 	return [count_het, count_ch, count_hom]
@@ -138,7 +140,7 @@ vcffile.close()
 
 #Generate output counts
 outfile=open(options.outfilename, "w")
-outfile.write("#GENE\tCASE_COUNT_HET\tCASE_COUNT_CH\tCASE_COUNT_HOM\n")
+outfile.write("#GENE\tCASE_COUNT_ALL\tCASE_COUNT_CH\tCASE_COUNT_HOM\n")
 snpfile=open(options.snpfilename, "r")
 for line_s1 in snpfile:
 	line_s=line_s1.rstrip('\n').split('\t')
