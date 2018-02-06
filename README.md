@@ -92,6 +92,18 @@ Required Options
 
 3) -o, --outfile: This is a path to your desired outfile name: e.g., /Users/smith/dat/out.txt. The default is "case_counts.txt"
 
+Additional Options
+4) --snpformat: Format for SNPs. Default is "VCFID". Your SNPs may be defined in any one of two ways.  If you supply the option "VCFID", then the program will use the VCF variant name in column 3 of your vcf (often rsIDs). Alternatively, you may supply "CHRPOSREFALT", in which case variants will be formatted as chr:pos:ref:alt (e.g., 1:1000:A:T).
+
+5) --samplefile: Optional file containing list of samples to use. File should contain one sample per row. Only samples in this list and in the VCF will be used. 
+
+6) --pass: Keep only PASS variants based on the "FILTER" field of your vcf
+
+7) --maxAC: Keep only variants with allele count (AC) less than this value. Note that this is calculated based on all samples in the VCF (i.e., the INFO field is not used). The default is 99999.
+
+8) --maxAF: Keep only variants with allele frequency (AF) less than this value. Note that this is calculated based on all samples in the VCF (i.e., the INFO field is not used). The default is 1.0.
+
+9) --GTfield: The format field within the genotype data from which genotypes should be extracted. The default is "GT"
 
 
 
