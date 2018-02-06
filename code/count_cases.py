@@ -104,10 +104,10 @@ def calculatecount(genesnps, snptable):
 	                hom_index=hom_index+snptable[tempsnp][2]
 
 	#Generate number of individuals carrying one variant
-        het_ac=len(set([x for x in het_index if het_index.count(x) == 1]))
-	ch_ac=len(set([x for x in het_index if het_index.count(x) > 1]))
-        hom_ac=len(list(set(hom_index)))
-	return [het_ac, ch_ac, hom_ac]
+        count_het=len(set([x for x in het_index if het_index.count(x) == 1]))
+	count_ch=len(set([x for x in het_index if het_index.count(x) > 1]))
+        count_hom=len(list(set(hom_index)))
+	return [count_het, count_ch, count_hom]
 
 #Make list of all SNPs across all genes present in snpfile
 allsnplist=makesnplist(options.snpfilename)
