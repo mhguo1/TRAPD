@@ -108,4 +108,26 @@ Additional Options
 
 
 
+2b) Counting carriers in public control cohorts
+This script will tabulate the approximate number of controls carrying qualifying variants in each gene as defined by a SNP file. Currently, this script has been configured to run using ExAC (http://exac.broadinstitute.org/downloads) or gnomAD (http://gnomad.broadinstitute.org/) data. The script will generate two counts for each gene:
+- CONTROL_COUNT_HET: Sum of allele counts of heterozygous qualifying variants in a given gene. 
+- CONTROL_COUNT_HOM: Sum of allele counts of homozygous qualifying variants in a given gene. 
 
+
+Required Options
+1) -v, --vcffile: This is the path to  VCF file containing control genotypes: e.g., /Users/smith/dat/public.vcf.gz. The vcf must be gzipped or bgzipped. The VCF should be downloaded from ExAC (http://exac.broadinstitute.org/downloads) or gnomAD (http://gnomad.broadinstitute.org/)
+
+2) -s, --snpfile: This is the path to your SNP file containing mappings of qualifying variants to gene (see Step 1). 
+
+3) -o, --outfile: This is a path to your desired outfile name: e.g., /Users/smith/dat/out.txt. The default is "case_counts.txt"
+
+Additional Options
+4) --snpformat: Format for SNPs. Default is "VCFID". Your SNPs may be defined in any one of two ways.  If you supply the option "VCFID", then the program will use the VCF variant name in column 3 of your vcf (often rsIDs). Alternatively, you may supply "CHRPOSREFALT", in which case variants will be formatted as chr:pos:ref:alt (e.g., 1:1000:A:T).
+
+5) --pop: Comma separated list of continental populations to use. For ExAC, these include AFR, AMR, EAS, FIN, NFE, SAS, OTH.  For gnomad, these include AFR, AMR, ASJ, EAS, FIN, NFE, SAS, OTH. If ALL is included, then all populations are used. The default is "ALL"
+
+6) --pass: Keep only PASS variants based on the "FILTER" field of VCF
+
+7) --maxAC: Keep only variants with allele count (AC) less than this value. Note that this is based on the INFO/AC field in the VCF. The default is 99999.
+
+8) --maxAF: Keep only variants with allele frequency (AF) less than this value. Note that this is based on the INFO/AF field in the VCF. The default is 1.0.
