@@ -17,6 +17,15 @@ BEDTools (http://bedtools.readthedocs.io/en/latest/) must also be loaded in the 
 0) Pre-processing:
 There are several pre-processing steps that are necessary before running TRAPD: 1) Separating multi-allelic variants, 2) left-aligning indels, 3) annotating your vcf. Below, we provide several sample command lines for performing these steps:
 
+a) Separating multi-allelics and left-aligning indels:
+	There are several ways to do this. Please see https://genome.sph.umich.edu/wiki/Variant_Normalization for additional details on this problem. 
+	We use Bcftools to accomplish these two steps using Bcftools (https://samtools.github.io/bcftools/bcftools.html):
+	bcftools norm -m -any in.vcf.gz | bcftools norm -f Homo_sapiens_assembly19.fasta | bgzip > out.vcf.gz
+	
+b) Annotation:
+	For variant annotation, we typically use VEP (https://www.ensembl.org/info/docs/tools/vep/script/index.html) and have achieved the best results with VEP. Several additional annotators include SnpEff (http://snpeff.sourceforge.net/) and ANNOVAR (http://annovar.openbioinformatics.org/en/latest/).
+	We highly recommend annotating the case and control data in the same way.
+
 
 1) Creating a SNP file 
 A SNP file maps qualifying variants to each gene. Qualifying variants are variants that you think may be pathogenic (usually, rare protein-altering variants). You can create a separate SNP file for your cases and controls, or you can make the same SNP file. The SNP file has two columns: 1) Column 1 is your gene name, and 2) Column 2 is a comma separated list of variants assigned to that gene. A variant can be assigned to multiple genes. The header for this file is: "#GENE SNPS".
