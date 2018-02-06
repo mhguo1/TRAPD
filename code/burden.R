@@ -24,7 +24,8 @@ dat$P_DOM<-0
 dat$P_REC<-0
 
 for(i in 1:nrow(dat)){
-  mat<-cbind(c(dat[i,]$CASE_COUNT_ALL, (args$casesize-dat[i,]$CASE_COUNT_ALL)), c(dat[i,]$CONTROL_AC_ALL, (args$controlsize-dat[i,]$CONTROL_AC_ALL)))
+  case_count<-dat[i,]$CASE_COUNT_ALL+dat[i,]$CASE_COUNT_CH+dat[i,]$CASE_COUNT_HOM
+  mat<-cbind(c(case_count, (args$casesize-case_count)), c(dat[i,]$CONTROL_AC_ALL, (args$controlsize-dat[i,]$CONTROL_AC_ALL)))
   dat[i,]$P_DOM<-fisher.test(mat, alternative="greater")$p.value
 }
 
