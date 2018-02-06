@@ -60,7 +60,7 @@ def extractcounts(pops, vcfline, max_ac, max_af):
 			temp_pop=pops[p]
 			ac_out=ac_out+int((";"+vcfline).split((";AC"+pop+"="))[1].split(";")[0])
 			ac_hom_out=ac_hom_out+int((";"+vcfline).split((";Hom_"+pop+"="))[1].split(";")[0])
-	return [ac_out, 2*ac_hom_out]
+	return [ac_out, ac_hom_out]
 
 def sumcount(genesnps, snptable):
 	ac_sum=0
@@ -97,7 +97,7 @@ vcffile.close()
 
 #Test by writing output
 outfile=open(options.outfilename, "w")
-outfile.write("#GENE\tCONTROL_AC_ALL\tCONTROL_AC_HOM\n")
+outfile.write("#GENE\tCONTROL_COUNT_ALL\tCONTROL_COUNT_HOM\n")
 snpfile=open(options.snpfilename, "r")
 for line_s1 in snpfile:
 	line_s=line_s1.rstrip('\n').split('\t')
