@@ -17,12 +17,11 @@ BEDTools (http://bedtools.readthedocs.io/en/latest/) must also be loaded in the 
 0) Pre-processing:
 There are several pre-processing steps that are necessary before running TRAPD: 1) Separating multi-allelic variants, 2) left-aligning indels, 3) annotating your vcf. Below, we provide several sample command lines for performing these steps:
 
-a) Separating multi-allelics and left-aligning indels:
-	There are several ways to do this. Please see https://genome.sph.umich.edu/wiki/Variant_Normalization for additional details on this problem. 
-	We use Bcftools to accomplish these two steps using Bcftools (https://samtools.github.io/bcftools/bcftools.html):
+	0.1-0.2) Separating multi-allelics and left-aligning indels:
+	There are several ways to do this. Please see https://genome.sph.umich.edu/wiki/Variant_Normalization for additional details on this problem. We use Bcftools to accomplish these two steps using Bcftools (https://samtools.github.io/bcftools/bcftools.html):
 	bcftools norm -m -any in.vcf.gz | bcftools norm -f Homo_sapiens_assembly19.fasta | bgzip > out.vcf.gz
 	
-b) Annotation:
+	0.3) Annotation:
 	For variant annotation, we typically use VEP (https://www.ensembl.org/info/docs/tools/vep/script/index.html) and have achieved the best results with VEP. Several additional annotators include SnpEff (http://snpeff.sourceforge.net/) and ANNOVAR (http://annovar.openbioinformatics.org/en/latest/).
 	We highly recommend annotating the case and control data in the same way.
 
