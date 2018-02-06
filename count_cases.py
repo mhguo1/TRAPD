@@ -7,12 +7,10 @@ import gzip
 parser = optparse.OptionParser()
 parser.add_option("-s", "--snpfile", action="store",dest="snpfilename") #File matching SNPs to genes
 parser.add_option("-v", "--vcffile", action="store",dest="vcffilename") #Path to vcf file
-parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="control_counts.txt") #Output file name 
+parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="case_counts.txt") #Output file name 
 
 parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID") #Field in which to get SNP names. If not VCF ID, then CHR:POS:REF:ALT is used
-##parser.add_option("--snpcolname", action="store",dest="snpcolname", default="NA")
 parser.add_option("--samplefile", action="store",dest="samplefilename", default="ALL")
-##parser.add_option("--recessive", action="store_true",dest="recessive")
 
 #Optional Filters
 parser.add_option("--pass", action="store_true", dest="passfilter")
@@ -105,7 +103,6 @@ def calculatecount(genesnps, snptable):
                         het_index=het_index+snptable[tempsnp][1]
 	                hom_index=hom_index+snptable[tempsnp][2]
 
-	
 	#Generate number of individuals carrying one variant
         het_ac=len(set([x for x in het_index if het_index.count(x) == 1]))
 	ch_ac=len(set([x for x in het_index if het_index.count(x) > 1]))
@@ -141,7 +138,7 @@ vcffile.close()
 
 #Generate output counts
 outfile=open(options.outfilename, "w")
-outfile.write("#GENE\tHET_COUNT\tCH_COUNT\tHOM_COUNT\n")
+outfile.write("#GENE\tCASE_COUNT_HET\tCASE_COUNT_CH\tCASE_COUNT_HOM\n")
 snpfile=open(options.snpfilename, "r")
 for line_s1 in snpfile:
 	line_s=line_s1.rstrip('\n').split('\t')
