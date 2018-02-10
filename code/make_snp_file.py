@@ -319,8 +319,8 @@ outfile.write("#GENE\tSNPS\n")
 for x in snptable:
 	if len(x)>0:
         #Read through hash table and print out variants
-        	syn_out=','.join(snptable[x][1])
-        	outfile.write(str(x)+"\t"+syn_out+"\n")
+        	snp_out=','.join(snptable[x][1])
+        	outfile.write(str(x)+"\t"+snp_out+"\n")
 outfile.close()
 
 #python make_snp_file.py -o test.out.txt -v gnomad.test.vcf.gz --vep --genecolname SYMBOL --snpformat CHRPOSREFALT --pass --includeinfo "AC[<]5"
