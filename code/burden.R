@@ -30,7 +30,7 @@ for(i in 1:nrow(dat)){
   if(case_count>args$casesize){case_count<-args$casesize}
   if(control_count>args$controlsize){control_count<-args$controlsize}
   
-  mat<-cbind(c(case_count, (args$casesize-case_count)), c(control_size, (args$controlsize-control_size)))
+  mat<-cbind(c(case_count, (args$casesize-case_count)), c(control_count, (args$controlsize-control_count)))
   dat[i,]$P_DOM<-fisher.test(mat, alternative="greater")$p.value
 }
 
