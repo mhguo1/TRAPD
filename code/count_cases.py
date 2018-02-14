@@ -72,9 +72,9 @@ def findsampleindex(vcfline, samplefilename):
 		sample_list=[]
 		sample_file=open(samplefilename, "r")
 		for line_s1 in sample_file:
-        			sample_list.append(line_s1.rstrip())
+        		sample_list.append(line_s1.rstrip())
 		sample_file.close()
-		sampleindex=[i for i,val in enumerate(samplenames) if str(val) in samplelist]
+		sampleindex=[i for i,val in enumerate(samplenames) if str(val) in sample_list]
 	return sampleindex
 
 def makesnplist(snpfile):
