@@ -53,7 +53,7 @@ def findcarriers(vcfline, gtname, snpformat, samplelist, max_ac, max_af):
 	ac_file=(float(len(hets)+2*len(homs)))
 	af_file=ac_file/(2*(float(len(gt))))
 	
-	if (ac_file>max_ac) or (af_file>max_af):
+	if (ac_file>float(max_ac)) or (af_file>float(max_af)):
 		return [[],[]]
 	else:
 		return [hetcarriers, homcarriers]
