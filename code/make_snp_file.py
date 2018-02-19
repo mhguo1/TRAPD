@@ -308,7 +308,7 @@ for line_vcf1 in open(vcffile.fn):
 				else: 
 					snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
 			if gene not in snptable:
-				snptable[gene]=[gene, []]
+				snptable[gene]=[gene, [snpid]]
 			else:
 				snptable[gene][1].append(snpid)
 pybedtools.cleanup() 			
