@@ -90,7 +90,7 @@ for line_vcf1 in vcffile:
 			else: 
 				snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
 			if snpid in allsnplist:
-				counts=extractcounts(options.pop, line_vcf[7], options.maxAC, options.maxAF)
+				counts=extractcounts(pops, line_vcf[7], options.maxAC, options.maxAF)
 				count_table[snpid]=[snpid, counts[0], counts[1]]
 vcffile.close()
 
