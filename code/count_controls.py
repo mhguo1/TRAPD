@@ -58,8 +58,8 @@ def extractcounts(pops, vcfline, max_ac, max_af):
 	elif "ALL" not in pops:
 		for p in range(0, len(pops), 1):
 			temp_pop=pops[p]
-			ac_out=ac_out+int((";"+vcfline).split((";AC"+pop+"="))[1].split(";")[0])
-			ac_hom_out=ac_hom_out+int((";"+vcfline).split((";Hom_"+pop+"="))[1].split(";")[0])
+			ac_out=ac_out+int((";"+vcfline).split((";AC"+temp_pop+"="))[1].split(";")[0])
+			ac_hom_out=ac_hom_out+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0])
 	return [ac_out, ac_hom_out]
 
 def sumcount(genesnps, snptable):
