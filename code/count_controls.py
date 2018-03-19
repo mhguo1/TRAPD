@@ -49,7 +49,10 @@ def makesnplist(snpfile):
 
 def extractcounts(pops, vcfline, max_ac, max_af):
 	ac_out=float((";"+vcfline).split((";AC="))[1].split(";")[0])
-	af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0])
+	if ac_out==0:
+		af_out=0
+	else:
+		af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0])
 	ac_hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0]
 
 	if (ac_out>float(max_ac)) or (af_out>float(max_af)):
