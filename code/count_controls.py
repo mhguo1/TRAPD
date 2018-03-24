@@ -18,6 +18,7 @@ parser.add_option("--pop", action="store",dest="pop", default="ALL")
 parser.add_option("--pass", action="store_true", dest="passfilter")
 parser.add_option("--maxAF", action="store",dest="maxAF", default=1)
 parser.add_option("--maxAC", action="store",dest="maxAC", default=99999)
+parser.add_option("--minAN", action="store",dest="minAN", default=0)
 
 options, args = parser.parse_args()
 if not options.snpfilename:   # if filename is not given
@@ -47,15 +48,16 @@ def makesnplist(snpfile):
 	return set(snplist)
 	snp_file.close()
 
-def extractcounts(pops, vcfline, max_ac, max_af):
+def extractcounts(pops, vcfline, max_ac, max_af, min_an):
 	ac_out=float((";"+vcfline).split((";AC="))[1].split(";")[0])
 	if ac_out==0:
 		af_out=0
 	else:
 		af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0])
 	ac_hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0]
+	an=float((";"+vcfline).split((";AN="))[1].split(";")[0])
 
-	if (ac_out>float(max_ac)) or (af_out>float(max_af)):
+	 if (ac_out>float(max_ac)) or (af_out>float(max_af)) or (an<float(min_an)):
 		ac_out=0
 		ac_hom_out=0
 	elif "ALL" not in pops:
@@ -93,7 +95,7 @@ for line_vcf1 in vcffile:
 			else: 
 				snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
 			if snpid in allsnplist:
-				counts=extractcounts(pops, line_vcf[7], options.maxAC, options.maxAF)
+				counts=extractcounts(pops, line_vcf[7], options.maxAC, options.maxAF, options.minAN)
 				count_table[snpid]=[snpid, counts[0], counts[1]]
 vcffile.close()
 
