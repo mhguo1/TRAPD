@@ -16,6 +16,7 @@ parser.add_option("--samplefile", action="store",dest="samplefilename", default=
 parser.add_option("--pass", action="store_true", dest="passfilter")
 parser.add_option("--maxAF", action="store",dest="maxAF", default=1)
 parser.add_option("--maxAC", action="store",dest="maxAC", default=99999)
+parser.add_option("--minAN", action="store",dest="minAN", default=0)
 parser.add_option("--GTfield", action="store",dest="gtfield", default="GT")
 
 options, args = parser.parse_args()
@@ -32,7 +33,7 @@ if options.vcffilename.endswith(".gz") is False:   # if vcf filename is not give
 
 
 #Functions
-def findcarriers(vcfline, gtname, snpformat, samplelist, max_ac, max_af):
+def findcarriers(vcfline, gtname, snpformat, samplelist, max_ac, max_af, min_an):
 	#Find the column in the genotype field corresponding to the genotypes
 	gtcol=vcfline[8].split(":").index(gtname)
 
@@ -52,8 +53,9 @@ def findcarriers(vcfline, gtname, snpformat, samplelist, max_ac, max_af):
 	
 	ac_file=(float(len(hets)+2*len(homs)))
 	af_file=ac_file/(2*(float(len(gt))))
+	an_file=2*(float(len(gt)))
 	
-	if (ac_file>float(max_ac)) or (af_file>float(max_af)):
+	if (ac_file>float(max_ac)) or (af_file>float(max_af)) or (an_file<float(min_an)):
 		return [[],[]]
 	else:
 		return [hetcarriers, homcarriers]
@@ -129,7 +131,7 @@ for line_vcf1 in vcffile:
 			else: 
 				snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
 			if snpid in allsnplist:
-				counts=findcarriers(line_vcf, options.gtfield, options.snpformat, sampleindices, options.maxAC, options.maxAF)
+				counts=findcarriers(line_vcf, options.gtfield, options.snpformat, sampleindices, options.maxAC, options.maxAF, options.minAN)
 				count_table[snpid]=[snpid, counts[0], counts[1]]
 		
 	#Find indices of samples in the sample file
