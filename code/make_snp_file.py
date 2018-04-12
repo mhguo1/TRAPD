@@ -250,8 +250,8 @@ if options.bedfilename is not None:
 	bed=BedTool(options.bedfilename)
 	vcffile=vcffile.intersect(bed)
 
-##for line_vcf1 in gzip.open(vcffile.fn):
-for line_vcf1 in open(vcffile.fn):
+for line_vcf1 in gzip.open(vcffile.fn):
+##for line_vcf1 in open(vcffile.fn):
 	line_vcf=line_vcf1.rstrip().split('\t')
 	keep=1
 	if line_vcf[0][0]!="#":
