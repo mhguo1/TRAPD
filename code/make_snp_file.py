@@ -110,7 +110,7 @@ def test_include_info(filter, vcfline):
 			else:
 				return 0
 		else:
-       			field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
+    #   			field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
         		if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
 				return 1
         		else:
@@ -134,7 +134,7 @@ def test_exclude_info(filter, vcfline):
 			else:
 				return 1
 		else:
-       			field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
+    #   			field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
         		if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
 				return 0
         		else:
@@ -146,7 +146,8 @@ def test_include_vep(filter, vcfline, csq_anno):
 	option_field=filter.split("[")[0]
 	csq_index=csq_anno.index(option_field)
         option_value=filter.split("]")[1]
-	if "CSQ=" in vcfline:
+	if "CSQ=" in vcfline and (csq_index-1)<=len((";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")):
+		field_value=(";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")[csq_index]
 		if filter.split("[")[1].split("]")[0]=="in":
 			listvalues=option_value.lstrip("(").rstrip(")").split(',')
 			counter=0
@@ -158,7 +159,7 @@ def test_include_vep(filter, vcfline, csq_anno):
 			else:
 				return 0
 		else:
-       			field_value=(";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")[csq_index]
+       			
         		if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
 				return 1
 	        	else:
@@ -170,7 +171,8 @@ def test_exclude_vep(filter, vcfline, csq_anno):
 	option_field=filter.split("[")[0]
 	csq_index=csq_anno.index(option_field)
         option_value=filter.split("]")[1]
-	if "CSQ=" in vcfline:
+	if "CSQ=" in vcfline and (csq_index-1)<=len((";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")):
+		field_value=(";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")[csq_index]
 		if filter.split("[")[1].split("]")[0]=="in":
 			listvalues=option_value.lstrip("(").rstrip(")").split(',')
 			counter=0
@@ -182,7 +184,6 @@ def test_exclude_vep(filter, vcfline, csq_anno):
 			else:
 				return 1
 		else:
-       			field_value=(";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")[csq_index]
         		if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
 				return 0
         		else:
