@@ -38,11 +38,12 @@ for(i in 1:nrow(dat)){
   
   #Recessive model
   case_count_rec<-dat[i,]$CASE_COUNT_CH+dat[i,]$CASE_COUNT_HOM
-  control_count_rec<-dat[i,]$CONTROL_COUNT_HOM+(args$controlsize)*((dat[i,]$CONTROL_COUNT_ALL-2*dat[i,]$CONTROL_COUNT_HOM)/args$controlsize)^2
+  control_count_rec<-dat[i,]$CONTROL_COUNT_HOM+(args$controlsize)*((dat[i,]$CONTROL_COUNT_ALL-2*dat[i,]$CONTROL_COUNT_HOM)/(args$controlsize))^2
   
-  if( control_count_rec<0){ control_count_rec<-0}
+  if(control_count_rec<0){ control_count_rec<-0}
   if(case_count_rec>args$casesize){case_count_rec<-args$casesize}
   if(control_count_rec>args$controlsize){control_count_rec<-args$controlsize}
+  control_count_rec<-round(control_count_rec, digits=0)
   
   mat_rec<-cbind(c(case_count_rec, (args$casesize-case_count_rec)), c(control_count_rec, (args$controlsize-control_count_rec)))
   dat[i,]$P_REC<-fisher.test(mat_rec, alternative="greater")$p.value
