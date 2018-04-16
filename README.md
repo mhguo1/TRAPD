@@ -68,17 +68,17 @@ Variants that are kept will meet ALL criteria supplied!
 
 3) --snpformat: Format for SNPs. Default is "VCFID". Your SNPs may be defined in any one of two ways.  If you supply the option "VCFID", then the program will use the VCF variant name in column 3 of your vcf (often rsIDs). Alternatively, you may supply "CHRPOSREFALT", in which case variants will be formatted as chr:pos:ref:alt (e.g., 1:1000:A:T).
 
-5) --bedfile: Path to a bed file for regions of interest. Only regions that are within the bed file-defined regions will be kept. If this option is not supplied, then the entire VCF will be used. Caution that if your chromosome names start in "chr" (e.g., "chr1"), then your bed file should be formatted similarly.
+4) --bedfile: Path to a bed file for regions of interest. Only regions that are within the bed file-defined regions will be kept. If this option is not supplied, then the entire VCF will be used. Caution that if your chromosome names start in "chr" (e.g., "chr1"), then your bed file should be formatted similarly.
 
-4) --pass: Keep only PASS variants based on the "FILTER" field of your vcf
+5) --pass: Keep only PASS variants based on the "FILTER" field of your vcf
 
-5) --genenull: Values for which a gene is to be considered null. Default is "NA" or ".". 
+6) --genenull: Values for which a gene is to be considered null. Default is "NA" or ".". 
 
-6) --vep: Option that should be supplied if you used VEP to annotate your vcf.
+7) --vep: Option that should be supplied if you used VEP to annotate your vcf.
 
-7) --snponly: If single nucleotide changes only should be considered.
+8) --snponly: If single nucleotide changes only should be considered.
 
-8) --indelonly: If only indels should be considered.
+9) --indelonly: If only indels should be considered.
 
 Output: The output file will contain two columns: 1) Column 1 will be a list of genes and will have the header "#GENE", and 2) Column 2 will be a comma separated list of SNPs assigned to that gene with the header "SNPS".
 
