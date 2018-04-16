@@ -24,6 +24,8 @@ dat$P_DOM<-0
 dat$P_REC<-0
 
 for(i in 1:nrow(dat)){
+  
+  #Dominant model
   case_count<-dat[i,]$CASE_COUNT_ALL+dat[i,]$CASE_COUNT_CH+dat[i,]$CASE_COUNT_HOM
   control_count<-dat[i,]$CONTROL_COUNT_ALL
   
@@ -32,6 +34,18 @@ for(i in 1:nrow(dat)){
   
   mat<-cbind(c(case_count, (args$casesize-case_count)), c(control_count, (args$controlsize-control_count)))
   dat[i,]$P_DOM<-fisher.test(mat, alternative="greater")$p.value
+  
+  
+  #Recessive model
+  case_count_rec<-dat[i,]$CASE_COUNT_CH+dat[i,]$CASE_COUNT_HOM
+  control_count_rec<-dat[i,]$CONTROL_COUNT_HOM+(args$controlsize)*((dat[i,]$CONTROL_COUNT_ALL-2*dat[i,]$CONTROL_COUNT_HOM)/args$controlsize)^2
+  
+  if( control_count_rec<0){ control_count_rec<-0}
+  if(case_count_rec>args$casesize){case_count_rec<-args$casesize}
+  if(control_count_rec>args$controlsize){control_count_rec<-args$controlsize}
+  
+  mat_rec<-cbind(c(case_count_rec, (args$casesize-case_count_rec)), c(control_count_rec, (args$controlsize-control_count_rec)))
+  dat[i,]$P_REC<-fisher.test(mat_rec, alternative="greater")$p.value
 }
 
 write.table(x=dat,file=args$outfile, sep="\t", quote=F, row.names=F, col.names=T)
