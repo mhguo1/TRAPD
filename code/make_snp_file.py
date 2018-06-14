@@ -239,10 +239,8 @@ if options.vep:
 
 ##Needs heavy editing still
 ##Check vcf header to make sure INFO fields are present
-##vcffile=gzip.open(options.vcffilename, "rb")	
 ##	if options.includevep is not None:
 ##		while iter<len(options.includevep):
-	
 
 #Open vcf file
 if options.bedfilename is not None:
