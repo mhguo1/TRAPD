@@ -10,7 +10,6 @@ parser$add_argument("--controlsize", action="store", type="integer")
 parser$add_argument("--outfile", action="store")
 
 args <- parser$parse_args()
-#args$casesize+args$controlsize
 
 case.dat<-read.delim(args$casefile, header=T, stringsAsFactors=F, sep="\t")
 names(case.dat)[1]<-"GENE"
