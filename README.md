@@ -26,10 +26,10 @@ There are several pre-processing steps that are necessary before running TRAPD: 
 	We highly recommend annotating the case and control data in the same way.
 
 
-**1) Creating a SNP file**
+**1a) Creating a SNP file**
 A SNP file maps qualifying variants to each gene. Qualifying variants are variants that you think may be pathogenic (usually, rare protein-altering variants). You can create a separate SNP file for your cases and controls, or you can make the same SNP file. The SNP file has two columns: 1) Column 1 is your gene name, and 2) Column 2 is a comma separated list of variants assigned to that gene. A variant can be assigned to multiple genes. The header for this file is: "#GENE SNPS".
 
-To create the SNP file, you must have an annotated vcf from which you define your gene names. The vcf does not need to have any genotypes. 
+To create the SNP file, you must have an annotated vcf from which you define your gene names. The vcf does not need to have any genotypes (i.e., can be a sites-only vcf). 
 
 python make_snp_file.py --vcffile $vcffilename --genecolname $genecol --outfile $outfilename
 
@@ -82,6 +82,13 @@ Variants that are kept will meet ALL criteria supplied!
 
 Output: The output file will contain two columns: 1) Column 1 will be a list of genes and will have the header "#GENE", and 2) Column 2 will be a comma separated list of SNPs assigned to that gene with the header "SNPS".
 
+**1b) Merging SNP files**
+This is an optional step if you need to merge two SNP files (for example, if you performed step 1a separately for SNPs and indels). It can also be used if you perfomed Step 1a separately for each chromosome. It has two required options:
+
+Required Options
+1) -s, --snpfiles: This is a comma-separated list of SNP files from Step 1a you are trying to merge.
+
+2) -o, --outfile: This is a path to your desired outfile name: e.g., /Users/smith/dat/out.txt.
 
 
 **2a) Counting carriers in case cohort**
