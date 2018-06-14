@@ -245,14 +245,14 @@ if options.vep:
 	
 
 #Open vcf file
-vcffile=BedTool(options.vcffilename)
-
 if options.bedfilename is not None:
+	vcffile=BedTool(options.vcffilename)
 	bed=BedTool(options.bedfilename)
-	vcffile=vcffile.intersect(bed)
+	vcffile_temp=vcffile.intersect(bed)
+else:
+	vcffile_temp=BedTool(options.vcffilename)
 
-for line_vcf1 in gzip.open(vcffile.fn):
-##for line_vcf1 in open(vcffile.fn):
+for line_vcf1 in open(vcffile_temp.fn):
 	line_vcf=line_vcf1.rstrip().split('\t')
 	keep=1
 	if line_vcf[0][0]!="#":
