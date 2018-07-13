@@ -55,12 +55,20 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 		af_out=0
 	else:
 		af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0])
-	ac_hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0]
+	ac_hom_out=(";"+vcfline).replace(";AC_Hom=", ";Hom=").split((";Hom="))[1].split(";")[0]
 	an=float((";"+vcfline).split((";AN="))[1].split(";")[0])
 	
-	af_popmax_out=(";"+vcfline).split((";AF_POPMAX="))[1].split(";")[0]
-        if af_popmax_out==".":
-                af_popmax_out=0
+	if ";AF_POPMAX=" in (";"+vcfline):
+		af_popmax_out=(";"+vcfline).split((";AF_POPMAX="))[1].split(";")[0]
+        	if af_popmax_out==".":
+              	 	af_popmax_out=0
+	elif (";AC_POPMAX=" in (";"+vcfline)) and (";AN_POPMAX" in (";"+vcfline)):
+		ac_popmax=(";"+vcfline).split((";AC_POPMAX="))[1].split(";")[0]
+		an_popmax=(";"+vcfline).split((";AN_POPMAX="))[1].split(";")[0]
+		if str(ac_popmax)=="NA" or str(an_popmax)=="NA":
+			af_popmax_out=0
+		else:
+			af_popmax_out=float(ac_popmax)/float(an_popmax)
         af_popmax_out=float(af_popmax_out)
 
 	 if (ac_out>float(max_ac)) or (af_out>float(max_af)) or (an<float(min_an)) or (af_popmax_out<float(af_popmax_out)):
