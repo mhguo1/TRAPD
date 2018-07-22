@@ -9,10 +9,12 @@ parser = optparse.OptionParser()
 #Required Options
 parser.add_option("-s", "--snpfile", action="store",dest="snpfilename")
 parser.add_option("-v", "--vcffile", action="store",dest="vcffilename")
+
 parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="control_counts.txt")
 
 parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID")
 parser.add_option("--pop", action="store",dest="pop", default="ALL")
+parser.add_option("-d", "--database", action="store", dest="database", default="generic")
 
 #Optional Filters
 parser.add_option("--pass", action="store_true", dest="passfilter")
@@ -28,11 +30,27 @@ if not options.snpfilename:   # if filename is not given
 if not options.vcffilename:   # if filename is not given
     parser.error('A vcf file is needed')
 
+if options.database not in ["generic", "gnomad", "exac"]:
+	parser.error('Database must be generic, gnomad, or exac')
+	
 #Parse populations
-if options.pop is not None:
+if options.database!="generic" and options.pop is not None:
 	pops=str(options.pop).split(',')
 else:
 	pops=["ALL"]
+
+#Check to make sure all populations listed are correct
+if options.database=="gnomad":
+	pop_list=["AFR", "AMR", "ALL", "ASJ", "EAS", "FIN", "NFE", "SAS"]
+	if not all(p in pop_list for p in pops):
+		   parser.error('Please check the populations listed')
+if options.database=="exac":
+	pop_list=["AFR", "AMR", "ALL", "EAS", "FIN", "NFE", "SAS"]
+	if not all(p in pop_list for p in pops):
+		   parser.error('Please check the populations listed')
+if options.database=="generic" and "ALL" not in pops:
+	parser.error('Please check the populations listed')
+	
 
 def makesnplist(snpfile):
 	#Makes a list of SNPs present in the snpfile
@@ -58,17 +76,10 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 	ac_hom_out=(";"+vcfline).replace(";AC_Hom=", ";Hom=").split((";Hom="))[1].split(";")[0]
 	an=float((";"+vcfline).split((";AN="))[1].split(";")[0])
 	
-	if ";AF_POPMAX=" in (";"+vcfline):
-		af_popmax_out=(";"+vcfline).split((";AF_POPMAX="))[1].split(";")[0]
-        	if af_popmax_out==".":
-              	 	af_popmax_out=0
-	elif (";AC_POPMAX=" in (";"+vcfline)) and (";AN_POPMAX" in (";"+vcfline)):
-		ac_popmax=(";"+vcfline).split((";AC_POPMAX="))[1].split(";")[0]
-		an_popmax=(";"+vcfline).split((";AN_POPMAX="))[1].split(";")[0]
-		if str(ac_popmax)=="NA" or str(an_popmax)=="NA":
-			af_popmax_out=0
-		else:
-			af_popmax_out=float(ac_popmax)/float(an_popmax)
+	
+	if popmax_af
+		af_popmax_out=get_popmax(vcfline)
+	
         af_popmax_out=float(af_popmax_out)
 
 	 if (ac_out>float(max_ac)) or (af_out>float(max_af)) or (an<float(min_an)) or (af_popmax_out<float(af_popmax_out)):
@@ -82,6 +93,25 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 			ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0])
 			ac_hom_out=int(ac_hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0])
 	return [ac_out, ac_hom_out]
+
+def get_popmax(vcfline):
+	if options.database in ["gnomad", "generic"]:
+		if ";AF_POPMAX=" in (";"+vcfline):
+			af_popmax_out=(";"+vcfline).split((";AF_POPMAX="))[1].split(";")[0]
+        		if af_popmax_out==".":
+              	 		af_popmax_out=0
+		else:
+			af_popmax_out=1
+	if options.database=="exac":
+		if (";AC_POPMAX=" in (";"+vcfline)) and (";AN_POPMAX" in (";"+vcfline)):
+			ac_popmax=(";"+vcfline).split((";AC_POPMAX="))[1].split(";")[0]
+			an_popmax=(";"+vcfline).split((";AN_POPMAX="))[1].split(";")[0]
+			if str(ac_popmax)=="NA" or str(an_popmax)=="NA":
+				af_popmax_out=0
+			else:
+				af_popmax_out=float(ac_popmax)/float(an_popmax)
+		else:
+			af_popmax_out=1
 
 def sumcount(genesnps, snptable):
 	ac_sum=0
@@ -116,7 +146,7 @@ for line_vcf1 in vcffile:
 vcffile.close()
 
 
-#Test by writing output
+#Write output
 outfile=open(options.outfilename, "w")
 outfile.write("#GENE\tCONTROL_COUNT_ALL\tCONTROL_COUNT_HOM\n")
 snpfile=open(options.snpfilename, "r")
