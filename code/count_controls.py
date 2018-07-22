@@ -76,9 +76,10 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 	ac_hom_out=(";"+vcfline).replace(";AC_Hom=", ";Hom=").split((";Hom="))[1].split(";")[0]
 	an=float((";"+vcfline).split((";AN="))[1].split(";")[0])
 	
-	
 	if popmax_af<1:
 		af_popmax_out=get_popmax(vcfline)
+	else:
+                af_popmax_out=1
 	
         af_popmax_out=float(af_popmax_out)
 
