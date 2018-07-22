@@ -141,8 +141,10 @@ Additional Options
 
 5) --pop: Comma separated list of continental populations to use. For ExAC, these include AFR, AMR, EAS, FIN, NFE, SAS, OTH.  For gnomad, these include AFR, AMR, ASJ, EAS, FIN, NFE, SAS, OTH. If ALL is included, then all populations are used. The default is "ALL"
 
-6) --pass: Keep only PASS variants based on the "FILTER" field of VCF
+6) -d, --database: Control database used. Default is "generic" which is any vcf that contains at least AC in the INFO column. Other options are "gnomad" or "exac"
 
-7) --maxAC: Keep only variants with allele count (AC) less than this value. Note that this is based on the INFO/AC field in the VCF. The default is 99999.
+7) --pass: Keep only PASS variants based on the "FILTER" field of VCF
 
-8) --maxAF: Keep only variants with allele frequency (AF) less than this value. Note that this is based on the INFO/AF field in the VCF. The default is 1.0.
+8) --maxAC: Keep only variants with allele count (AC) less than this value. Note that this is based on the INFO/AC field in the VCF. The default is 99999.
+
+9) --maxAF: Keep only variants with allele frequency (AF) less than this value. Note that this is based on the INFO/AF field in the VCF. The default is 1.0.
