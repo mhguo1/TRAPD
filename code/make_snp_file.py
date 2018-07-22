@@ -63,25 +63,69 @@ def checkfilter(infofilter):
 	else:
 		return 1
 	
+#Read in vcf header and extract all INFO fields
+info_fields=[]
+vcffile=gzip.open(options.vcffilename, "rb")
+for line_vcf1 in vcffile:
+	if line_vcf1[0]=="#":
+		if "##INFO=<ID=" in line_vcf1:
+			temp_field=line_vcf1.split("##INFO=<ID=")[1].split(",")[0]
+			info_fields.append(temp_field)
+	else:
+		break
+		
+#Read in vcf header to get VEP CSQ fields
+if options.vep:
+	vcffile=gzip.open(options.vcffilename, "rb")
+	csq_found=0
+	for line_vcf1 in vcffile:
+		if line_vcf1[0]=="#" and ("ID=CSQ" in line_vcf1):
+			csq_anno=line_vcf1.rstrip('\n').replace('"', '').strip('>').split("Format: ")[1].split("|")
+			csq_found=1
+			break
+	if csq_found==0:
+		sys.stdout.write("VEP CSQ annotations not found in vcf header\n")
+		sys.exit()
+	vcffile.close()
+
+if options.vep:
+	if options.genecolname not in csq_anno:
+		sys.stdout.write("Gene column name not found in VEP annotations\n")
+		sys.exit()
+		
+
+#Run through all filters to make sure they're okay
 if options.includeinfo is not None:
 	for i in range(0, len(options.includeinfo), 1):
 		if checkfilter(options.includeinfo[i])==0:
 			sys.stdout.write(str(options.includeinfo[i])+" is malformed\n")
+			sys.exit()
+		if options.includeinfo[i].split("[")[0] not in info_fields:
+			sys.stdout.write(str(options.includeinfo[i])+" is not in VCF file\n")
 			sys.exit()
 if options.excludeinfo is not None:
 	for i in range(0, len(options.excludeinfo), 1):
 		if checkfilter(options.excludeinfo[i])==0:
 			sys.stdout.write(str(options.excludeinfo[i])+" is malformed\n")
 			sys.exit()
+		if options.excludeinfo[i].split("[")[0] not in info_fields:
+			sys.stdout.write(str(options.excludeinfo[i])+" is not in VCF file\n")
+			sys.exit()
 if options.includevep is not None:
 	for i in range(0, len(options.includevep), 1):
 		if checkfilter(options.includevep[i])==0:
 			sys.stdout.write(str(options.includevep[i])+" is malformed\n")
 			sys.exit()
+		if options.includevep[i].split("[")[0] not in csq_anno:
+			sys.stdout.write(str(options.includeinfo[i])+" is not in VCF file\n")
+			sys.exit()
 if options.excludevep is not None:
 	for i in range(0, len(options.excludevep), 1):
 		if checkfilter(options.excludevep[i])==0:
 			sys.stdout.write(str(options.excludevep[i])+" is malformed\n")
+			sys.exit()
+		if options.excludevep[i].split("[")[0] not in csq_anno:
+			sys.stdout.write(str(options.excludeinfo[i])+" is not in VCF file\n")
 			sys.exit()
 		
 		 
@@ -218,29 +262,6 @@ def get_operator_fn(op):
 #Create empty snptable
 snptable={}
 
-#Read in vcf header to get VEP CSQ fields
-if options.vep:
-	vcffile=gzip.open(options.vcffilename, "rb")
-	csq_found=0
-	for line_vcf1 in vcffile:
-		if line_vcf1[0]=="#" and ("ID=CSQ" in line_vcf1):
-			csq_anno=line_vcf1.rstrip('\n').replace('"', '').strip('>').split("Format: ")[1].split("|")
-			csq_found=1
-			break
-	if csq_found==0:
-		sys.stdout.write("VEP CSQ annotations not found in vcf header\n")
-		sys.exit()
-	vcffile.close()
-
-if options.vep:
-	if options.genecolname not in csq_anno:
-		sys.stdout.write("Gene column name not found in VEP annotations\n")
-		sys.exit()
-
-##Needs heavy editing still
-##Check vcf header to make sure INFO fields are present
-##	if options.includevep is not None:
-##		while iter<len(options.includevep):
 
 #Open vcf file
 if options.bedfilename is not None:
