@@ -83,7 +83,7 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 	
         af_popmax_out=float(af_popmax_out)
 
-	if (ac_out>float(max_ac)) or (af_out>float(max_af)) or (an<float(min_an)) or (af_popmax_out<float(af_popmax_out)):
+	if (ac_out>float(max_ac)) or (af_out>float(max_af)) or (an<float(min_an)) or (af_popmax_out>float(popmax_af)):
 		ac_out=0
 		ac_hom_out=0
 	elif "ALL" not in pops:
