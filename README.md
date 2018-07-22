@@ -118,6 +118,9 @@ Additional Options
 
 8) --maxAF: Keep only variants with allele frequency (AF) less than this value. Note that this is calculated based on all samples in the VCF (i.e., the INFO field is not used). The default is 1.0.
 
+9) --popmaxAF: Keep only variants with population maximum allele frequency (AF) less than this value. This is based on the "POThe default is 1.0.
+parser.add_option("--popmaxAF", action="store",dest="popmaxAF", default=1)
+
 9) --GTfield: The format field within the genotype data from which genotypes should be extracted. The default is "GT"
 
 
