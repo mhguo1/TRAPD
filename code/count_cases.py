@@ -18,6 +18,7 @@ parser.add_option("--maxAF", action="store",dest="maxAF", default=1)
 parser.add_option("--maxAC", action="store",dest="maxAC", default=99999)
 parser.add_option("--minAN", action="store",dest="minAN", default=0)
 parser.add_option("--GTfield", action="store",dest="gtfield", default="GT")
+parser.add_option("--bedfile", action="store", dest="bedfilename")
 
 options, args = parser.parse_args()
 
@@ -119,10 +120,17 @@ allsnplist=makesnplist(options.snpfilename)
 #Make a hashtable with keys as each SNP, and stores a list of indices of carriers for that SNP
 count_table={} 
 
-#Open vcf file
-vcffile=gzip.open(options.vcffilename, "rb")
 
-for line_vcf1 in vcffile:
+#Open vcf file
+vcffile=BedTool(options.vcffilename)
+if options.bedfilename is not None:
+        bed=BedTool(options.bedfilename)
+        vcffile_temp=vcffile.intersect(bed)
+else:
+        dummy_bed=BedTool('1000 100000000 100000001', from_string=True)
+        vcffile_temp=vcffile.subtract(dummy_bed)
+
+for line_vcf1 in open(vcffile_temp.fn):
 	line_vcf=line_vcf1.rstrip().split('\t')
 	if line_vcf[0][0]!="#":
 		if not (options.passfilter and line_vcf[6]!="PASS"):
