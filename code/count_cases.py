@@ -57,9 +57,9 @@ def findcarriers(vcfline, gtname, snpformat, samplelist, max_ac, max_af, min_an)
 	an_file=2*(float(len(gt)))
 	
 	if (ac_file>float(max_ac)) or (af_file>float(max_af)) or (an_file<float(min_an)):
-		return [[],[]]
+		return [[],[], []]
 	else:
-		return [hetcarriers, homcarriers]
+		return [hetcarriers, homcarriers, ac_file]
 
 def findsampleindex(vcfline, samplefilename):
 	#This takes the vcf header line and finds the indices corresponding to the individuals present in the sample file
@@ -101,18 +101,20 @@ def calculatecount(genesnps, snptable):
         all_index=[]
 	het_index=[]
 	hom_index=[]
+	total_ac=0
         for s in range(0, len(genesnps), 1):
                 if genesnps[s] in snptable:
                         tempsnp=genesnps[s]
 			het_index=het_index+snptable[tempsnp][1]
 	                hom_index=hom_index+snptable[tempsnp][2]
+			total_ac=total_ac+snptable[tempsnp][3]
 	all_index=het_index+hom_index
 			
 	#Generate number of individuals carrying one variant
         count_het=len(set([x for x in all_index if all_index.count(x) > 0]))
 	count_ch=len(set([x for x in het_index if het_index.count(x) > 1]))
         count_hom=len(list(set(hom_index)))
-	return [count_het, count_ch, count_hom]
+	return [count_het, count_ch, count_hom, total_ac]
 
 #Make list of all SNPs across all genes present in snpfile
 allsnplist=makesnplist(options.snpfilename)
@@ -140,7 +142,7 @@ for line_vcf1 in open(vcffile_temp.fn):
 				snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
 			if snpid in allsnplist:
 				counts=findcarriers(line_vcf, options.gtfield, options.snpformat, sampleindices, options.maxAC, options.maxAF, options.minAN)
-				count_table[snpid]=[snpid, counts[0], counts[1]]
+				count_table[snpid]=[snpid, counts[0], counts[1], counts[2]]
 		
 	#Find indices of samples in the sample file
 	elif line_vcf[0]=="#CHROM":
@@ -150,7 +152,7 @@ vcffile.close()
 
 #Generate output counts
 outfile=open(options.outfilename, "w")
-outfile.write("#GENE\tCASE_COUNT_ALL\tCASE_COUNT_CH\tCASE_COUNT_HOM\n")
+outfile.write("#GENE\tCASE_COUNT_ALL\tCASE_COUNT_CH\tCASE_COUNT_HOM\tCASE_TOTAL_AC\n")
 snpfile=open(options.snpfilename, "r")
 for line_s1 in snpfile:
 	line_s=line_s1.rstrip('\n').split('\t')
