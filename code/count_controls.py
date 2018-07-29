@@ -22,6 +22,8 @@ parser.add_option("--maxAF", action="store",dest="maxAF", default=1)
 parser.add_option("--maxAC", action="store",dest="maxAC", default=99999)
 parser.add_option("--popmaxAF", action="store",dest="popmaxAF", default=1)
 parser.add_option("--minAN", action="store",dest="minAN", default=0)
+parser.add_option("--homcol", action="store",dest="homcol")
+parser.add_option("--bedfile", action="store", dest="bedfilename")
 
 options, args = parser.parse_args()
 if not options.snpfilename:   # if filename is not given
@@ -131,9 +133,15 @@ allsnplist=makesnplist(options.snpfilename)
 count_table={} 
 
 #Open vcf file
-vcffile=gzip.open(options.vcffilename, "rb")
+vcffile=BedTool(options.vcffilename)
+if options.bedfilename is not None:
+        bed=BedTool(options.bedfilename)
+        vcffile_temp=vcffile.intersect(bed)
+else:
+        dummy_bed=BedTool('1000 100000000 100000001', from_string=True)
+        vcffile_temp=vcffile.subtract(dummy_bed)
 
-for line_vcf1 in vcffile:
+for line_vcf1 in open(vcffile_temp.fn):
 	line_vcf=line_vcf1.rstrip().split('\t')
 	if line_vcf[0][0]!="#":
 		if not (options.passfilter and line_vcf[6]!="PASS"):
@@ -149,14 +157,14 @@ vcffile.close()
 
 #Write output
 outfile=open(options.outfilename, "w")
-outfile.write("#GENE\tCONTROL_COUNT_ALL\tCONTROL_COUNT_HOM\n")
+outfile.write("#GENE\tCONTROL_COUNT_ALL\tCONTROL_COUNT_HOM\tCONTROL_TOTAL_AC\n")
 snpfile=open(options.snpfilename, "r")
 for line_s1 in snpfile:
 	line_s=line_s1.rstrip('\n').split('\t')
 	if line_s[0][0]!="#":
 		genesnplist=list(set(line_s[1].split(',')))
 		sumcounts=sumcount(genesnplist, count_table)
-		outfile.write(line_s[0]+"\t"+str(sumcounts[0])+"\t"+str(sumcounts[1])+'\n')
+		outfile.write(line_s[0]+"\t"+str(sumcounts[0])+"\t"+str(sumcounts[1])+"\t"+str(sumcounts[0]+2*sumcounts[1])+'\n')
 outfile.close()
 snpfile.close()
 
