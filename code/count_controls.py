@@ -51,9 +51,8 @@ if options.database=="exac":
 	if not all(p in pop_list for p in pops):
 		   parser.error('Please check the populations listed')
 if options.database=="generic" and "ALL" not in pops:
-	parser.error('Please check the populations listed')
+	parser.error('Please check the populations listed for your control database')
 	
-
 def makesnplist(snpfile):
 	#Makes a list of SNPs present in the snpfile
 	snplist=[]
@@ -69,13 +68,21 @@ def makesnplist(snpfile):
 	return set(snplist)
 	snp_file.close()
 
-def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
+def extractcountsgnomad(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 	ac_out=float((";"+vcfline).split((";AC="))[1].split(";")[0])
 	if ac_out==0:
 		af_out=0
 	else:
 		af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0])
-	ac_hom_out=(";"+vcfline).replace(";AC_Hom=", ";Hom=").split((";Hom="))[1].split(";")[0]
+	if args$database=="gnomad":
+		ac_hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0]
+	elif args$database=="exac":
+		ac_hom_out=(";"+vcfline).split((";AC_Hom="))[1].split(";")[0]
+	elif args$database=="generic":
+		if args$homcol is not None:
+			ac_hom_out=(";"+vcfline).split((args$homcol))[1].split(";")[0]
+		else:
+			ac_hom_out=0
 	an=float((";"+vcfline).split((";AN="))[1].split(";")[0])
 	
 	if popmax_af<1:
@@ -96,6 +103,7 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 			ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0])
 			ac_hom_out=int(ac_hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0])
 	return [ac_out, ac_hom_out]
+
 
 def get_popmax(vcfline):
 	if options.database in ["gnomad", "generic"]:
