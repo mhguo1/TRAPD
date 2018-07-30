@@ -54,7 +54,21 @@ if options.database=="generic" and "ALL" not in pops:
 	parser.error('Please check the populations listed for your control database')
 	
 #Check generic database to make sure it has AC, AN and AF
-
+if options.database=="generic":
+	vcffile=gzip.open(options.vcffilename, "rb")
+        ac_found=0
+	an_found=0
+        for line_vcf1 in vcffile:
+                if line_vcf1[0]=="#" and ("ID=AC," in line_vcf1):
+                        ac_found=1
+		elif line_vcf1[0]=="#" and ("ID=AN," in line_vcf1):
+                        an_found=1
+		elif line_vcf1[0:1]=="#C":
+                        break
+        if ac_found==0 or an_found==0:
+                sys.stdout.write("AC and AN not found in vcf file\n")
+                sys.exit()
+        vcffile.close()
 	
 def makesnplist(snpfile):
 	#Makes a list of SNPs present in the snpfile
