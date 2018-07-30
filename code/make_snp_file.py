@@ -178,7 +178,6 @@ def test_exclude_info(filter, vcfline):
 			else:
 				return 1
 		else:
-    #   			field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
         		if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
 				return 0
         		else:
