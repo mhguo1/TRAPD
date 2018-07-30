@@ -74,12 +74,12 @@ def extractcountsgnomad(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 		af_out=0
 	else:
 		af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0])
-	if args$database=="gnomad":
+	if options.database=="gnomad":
 		ac_hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0]
-	elif args$database=="exac":
+	elif options.database=="exac":
 		ac_hom_out=(";"+vcfline).split((";AC_Hom="))[1].split(";")[0]
-	elif args$database=="generic":
-		if args$homcol is not None:
+	elif options.database=="generic":
+		if options.homcol is not None:
 			ac_hom_out=(";"+vcfline).split((args$homcol))[1].split(";")[0]
 		else:
 			ac_hom_out=0
