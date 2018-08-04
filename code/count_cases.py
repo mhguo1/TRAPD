@@ -36,6 +36,34 @@ if not options.vcffilename:   # if vcf filename is not given
 if options.vcffilename.endswith(".gz") is False:   # if vcf filename is not given
     parser.error('Is your vcf file gzipped?')
 
+vcffile=gzip.open(options.vcffilename, "rb")
+chrformat="number"
+for line_vcf1 in vcffile:
+	line_vcf=line_vcf1.split("\t")
+	if "##contig" in line_vcf:
+		if "chr" in line_vcf.split("ID=")[1].split(",")[0]
+			chrformat="chr"
+	elif line_vcf[0]=="#CHROM":
+		#This takes the vcf header line and finds the indices corresponding to the individuals present in the sample file
+		samplenames=line_vcf.rstrip().split('\t')[9:]
+
+		#If User doesn't provide sample list, assume all samples in vcf
+		if samplefilename=="ALL":
+			sampleindex=range(0, len(samplenames),1)
+
+		#else, find the indices corresponding to the samples in the user-provided list
+		else:
+			#Generate sample list
+			sample_list=[]
+			sample_file=open(samplefilename, "r")
+			for line_s1 in sample_file:
+        			sample_list.append(line_s1.rstrip())
+			sample_file.close()
+			sampleindex=[i for i,val in enumerate(samplenames) if str(val) in sample_list]
+		return sampleindex
+		break
+
+
 
 #Functions
 def findcarriers(vcfline, gtname, snpformat, samplelist, max_ac, max_af, min_an):
@@ -65,24 +93,6 @@ def findcarriers(vcfline, gtname, snpformat, samplelist, max_ac, max_af, min_an)
 	else:
 		return [hetcarriers, homcarriers, ac_file]
 
-def findsampleindex(vcfline, samplefilename):
-	#This takes the vcf header line and finds the indices corresponding to the individuals present in the sample file
-	samplenames=vcfline.rstrip().split('\t')[9:]
-
-	#If User doesn't provide sample list, assume all samples in vcf
-	if samplefilename=="ALL":
-		sampleindex=range(0, len(samplenames),1)
-
-	#else, find the indices corresponding to the samples in the user-provided list
-	else:
-		#Generate sample list
-		sample_list=[]
-		sample_file=open(samplefilename, "r")
-		for line_s1 in sample_file:
-        		sample_list.append(line_s1.rstrip())
-		sample_file.close()
-		sampleindex=[i for i,val in enumerate(samplenames) if str(val) in sample_list]
-	return sampleindex
 
 def makesnplist(snpfile):
 	#Makes a list of SNPs present in the snpfile
@@ -149,8 +159,8 @@ for line_vcf1 in open(vcffile_temp.fn):
 				count_table[snpid]=[snpid, counts[0], counts[1], counts[2]]
 		
 	#Find indices of samples in the sample file
-	elif line_vcf[0]=="#CHROM":
-		sampleindices=findsampleindex(line_vcf1, options.samplefilename)
+	#elif line_vcf[0]=="#CHROM":
+	#	sampleindices=findsampleindex(line_vcf1, options.samplefilename)
 pybedtools.cleanup() 
 
 
