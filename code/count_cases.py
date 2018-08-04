@@ -40,8 +40,8 @@ vcffile=gzip.open(options.vcffilename, "rb")
 chrformat="number"
 for line_vcf1 in vcffile:
 	line_vcf=line_vcf1.split("\t")
-	if "##contig" in line_vcf:
-		if "chr" in line_vcf.split("ID=")[1].split(",")[0]:
+	if "##contig" in line_vcf[0]:
+		if "ID=chr" in line_vcf[0]:
 			chrformat="chr"
 	elif line_vcf[0]=="#CHROM":
 		#This takes the vcf header line and finds the indices corresponding to the individuals present in the sample file
@@ -61,8 +61,7 @@ for line_vcf1 in vcffile:
 			sample_file.close()
 			sampleindices=[i for i,val in enumerate(samplenames) if str(val) in sample_list]
 		break
-
-
+vcffile.close()
 
 #Functions
 def findcarriers(vcfline, gtname, snpformat, samplelist, max_ac, max_af, min_an):
