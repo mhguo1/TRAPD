@@ -89,7 +89,7 @@ def makesnplist(snpfile):
 	return set(snplist)
 	snp_file.close()
 
-def extractcountsgnomad(pops, vcfline, max_ac, max_af, popmax_af,min_an):
+def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 	ac_out=float((";"+vcfline).split((";AC="))[1].split(";")[0])
 	an=float((";"+vcfline).split((";AN="))[1].split(";")[0])
 	if ac_out==0:
