@@ -198,8 +198,7 @@ for line_vcf1 in open(vcffile_temp.fn):
 			if snpid in allsnplist:
 				counts=extractcounts(pops, line_vcf[7], options.maxAC, options.maxAF, options.popmaxAF,options.minAN)
 				count_table[snpid]=[snpid, counts[0], counts[1]]
-vcffile.close()
-
+pybedtools.cleanup() 
 
 #Write output
 outfile=open(options.outfilename, "w")
