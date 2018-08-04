@@ -41,7 +41,7 @@ chrformat="number"
 for line_vcf1 in vcffile:
 	line_vcf=line_vcf1.split("\t")
 	if "##contig" in line_vcf:
-		if "chr" in line_vcf.split("ID=")[1].split(",")[0]
+		if "chr" in line_vcf.split("ID=")[1].split(",")[0]:
 			chrformat="chr"
 	elif line_vcf[0]=="#CHROM":
 		#This takes the vcf header line and finds the indices corresponding to the individuals present in the sample file
@@ -60,7 +60,6 @@ for line_vcf1 in vcffile:
         			sample_list.append(line_s1.rstrip())
 			sample_file.close()
 			sampleindex=[i for i,val in enumerate(samplenames) if str(val) in sample_list]
-		return sampleindex
 		break
 
 
@@ -143,7 +142,10 @@ if options.bedfilename is not None:
         bed=BedTool(options.bedfilename)
         vcffile_temp=vcffile.intersect(bed)
 else:
-        dummy_bed=BedTool('1000 100000000 100000001', from_string=True)
+	if chrformat=="chr":
+        	dummy_bed=BedTool('chr1000 100000000 100000001', from_string=True)
+	else:
+		dummy_bed=BedTool('1000 100000000 100000001', from_string=True)
         vcffile_temp=vcffile.subtract(dummy_bed)
 
 for line_vcf1 in open(vcffile_temp.fn):
