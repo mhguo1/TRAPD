@@ -25,8 +25,8 @@ dat$P_REC<-0
 for(i in 1:nrow(dat)){
   
   #Dominant model
-  case_count<-dat[i,]$CASE_COUNT_ALL+dat[i,]$CASE_COUNT_CH+dat[i,]$CASE_COUNT_HOM
-  control_count<-dat[i,]$CONTROL_COUNT_ALL
+  case_count<-dat[i,]$CASE_COUNT_HET+dat[i,]$CASE_COUNT_CH+dat[i,]$CASE_COUNT_HOM
+  control_count<-dat[i,]$CONTROL_COUNT_HET+dat[i,]$CONTROL_COUNT_HOM
   
   if(case_count>args$casesize){case_count<-args$casesize}
   if(control_count>args$controlsize){control_count<-args$controlsize}
@@ -37,7 +37,7 @@ for(i in 1:nrow(dat)){
   
   #Recessive model
   case_count_rec<-dat[i,]$CASE_COUNT_CH+dat[i,]$CASE_COUNT_HOM
-  control_count_rec<-dat[i,]$CONTROL_COUNT_HOM+(args$controlsize)*((dat[i,]$CONTROL_COUNT_ALL-2*dat[i,]$CONTROL_COUNT_HOM)/(args$controlsize))^2
+  control_count_rec<-dat[i,]$CONTROL_COUNT_HOM+(args$controlsize)*((dat[i,]$CONTROL_COUNT_HET)/(args$controlsize))^2
   
   if(control_count_rec<0){ control_count_rec<-0}
   if(case_count_rec>args$casesize){case_count_rec<-args$casesize}
