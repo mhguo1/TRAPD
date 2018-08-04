@@ -49,7 +49,7 @@ for line_vcf1 in vcffile:
 
 		#If User doesn't provide sample list, assume all samples in vcf
 		if options.samplefilename=="ALL":
-			sampleindex=range(0, len(samplenames),1)
+			sampleindices=range(0, len(samplenames),1)
 
 		#else, find the indices corresponding to the samples in the user-provided list
 		else:
@@ -59,7 +59,7 @@ for line_vcf1 in vcffile:
 			for line_s1 in sample_file:
         			sample_list.append(line_s1.rstrip())
 			sample_file.close()
-			sampleindex=[i for i,val in enumerate(samplenames) if str(val) in sample_list]
+			sampleindices=[i for i,val in enumerate(samplenames) if str(val) in sample_list]
 		break
 
 
