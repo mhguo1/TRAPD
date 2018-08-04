@@ -45,7 +45,7 @@ for line_vcf1 in vcffile:
 			chrformat="chr"
 	elif line_vcf[0]=="#CHROM":
 		#This takes the vcf header line and finds the indices corresponding to the individuals present in the sample file
-		samplenames=line_vcf.rstrip().split('\t')[9:]
+		samplenames=line_vcf[9:]
 
 		#If User doesn't provide sample list, assume all samples in vcf
 		if samplefilename=="ALL":
