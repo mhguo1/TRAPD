@@ -1,7 +1,11 @@
 #!/usr/bin/python
 import optparse
+import operator
+import re
 import sys
 import gzip 
+import pybedtools
+from pybedtools import BedTool
 
 #Parse options
 parser = optparse.OptionParser()
