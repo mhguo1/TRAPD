@@ -118,11 +118,13 @@ Additional Options
 
 8) --maxAF: Keep only variants with allele frequency (AF) less than this value. Note that this is calculated based on all samples in the VCF (i.e., the INFO field is not used). The default is 1.0.
 
-9) --popmaxAF: Keep only variants with population maximum allele frequency (AF) less than this value. If gnomAD or ExAC is used, this option will use the values from the downloaded vcf. If "generic" database is used, there must be a field in "INFO" called "AF_POPMAX". The default is 1.0.
+9) --minAN: Keep only variants with allele number (AN) greater than this value.  Note that this is based on the INFO/AF field in the VCF. The default is 0. 
 
-10) --GTfield: The format field within the genotype data from which genotypes should be extracted. The default is "GT"
+10) --popmaxAF: Keep only variants with population maximum allele frequency (AF) less than this value. If gnomAD or ExAC is used, this option will use the values from the downloaded vcf. If "generic" database is used, there must be a field in "INFO" called "AF_POPMAX". The default is 1.0.
 
+11) --GTfield: The format field within the genotype data from which genotypes should be extracted. The default is "GT"
 
+11) --bedfile: Path to a bed file for regions of interest. Only regions that are within the bed file-defined regions will be kept. If this option is not supplied, then the entire VCF will be used. Caution that if your chromosome names start in "chr" (e.g., "chr1"), then your bed file should be formatted similarly.
 
 
 **2b) Counting carriers in public control cohorts**
@@ -143,10 +145,16 @@ Additional Options
 
 5) --pop: Comma separated list of continental populations to use. For ExAC, these include AFR, AMR, EAS, FIN, NFE, SAS, OTH.  For gnomad, these include AFR, AMR, ASJ, EAS, FIN, NFE, SAS, OTH. If ALL is included, then all populations are used. The default is "ALL"
 
-6) -d, --database: Control database used. Default is "generic" which is any vcf that contains at least AC in the INFO column. Other options are "gnomad" or "exac"
+6) -d, --database: Control database used. Default is "generic" which is any vcf that contains at least AC and AN in the INFO column. Other options are "gnomad" or "exac"
 
 7) --pass: Keep only PASS variants based on the "FILTER" field of VCF
 
 8) --maxAC: Keep only variants with allele count (AC) less than this value. Note that this is based on the INFO/AC field in the VCF. The default is 99999.
 
 9) --maxAF: Keep only variants with allele frequency (AF) less than this value. Note that this is based on the INFO/AF field in the VCF. The default is 1.0.
+
+10) --minAN: Keep only variants with allele number (AN) greater than this value.  Note that this is based on the INFO/AF field in the VCF. The default is 0. 
+
+11) --homcol: This argument is only relevant if the database is "generic". This argument specifies the INFO field that contains the counts of the number of homozygotes. If not specified for a generic database, then homozygotes will not be counted.
+
+12) --bedfile: Path to a bed file for regions of interest. Only regions that are within the bed file-defined regions will be kept. If this option is not supplied, then the entire VCF will be used. Caution that if your chromosome names start in "chr" (e.g., "chr1"), then your bed file should be formatted similarly.
