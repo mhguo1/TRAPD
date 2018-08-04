@@ -151,7 +151,7 @@ for line_vcf1 in open(vcffile_temp.fn):
 	#Find indices of samples in the sample file
 	elif line_vcf[0]=="#CHROM":
 		sampleindices=findsampleindex(line_vcf1, options.samplefilename)
-vcffile.close()
+pybedtools.cleanup() 
 
 
 #Generate output counts
