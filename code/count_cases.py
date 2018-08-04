@@ -48,14 +48,14 @@ for line_vcf1 in vcffile:
 		samplenames=line_vcf[9:]
 
 		#If User doesn't provide sample list, assume all samples in vcf
-		if samplefilename=="ALL":
+		if options.samplefile=="ALL":
 			sampleindex=range(0, len(samplenames),1)
 
 		#else, find the indices corresponding to the samples in the user-provided list
 		else:
 			#Generate sample list
 			sample_list=[]
-			sample_file=open(samplefilename, "r")
+			sample_file=open(options.samplefile, "r")
 			for line_s1 in sample_file:
         			sample_list.append(line_s1.rstrip())
 			sample_file.close()
