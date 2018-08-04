@@ -158,3 +158,5 @@ Additional Options
 11) --homcol: This argument is only relevant if the database is "generic". This argument specifies the INFO field that contains the counts of the number of homozygotes. If not specified for a generic database, then homozygotes will not be counted.
 
 12) --bedfile: Path to a bed file for regions of interest. Only regions that are within the bed file-defined regions will be kept. If this option is not supplied, then the entire VCF will be used. Caution that if your chromosome names start in "chr" (e.g., "chr1"), then your bed file should be formatted similarly.
+
+Output: The output file will contain three columns: 1) Column 1 will be a list of genes and will have the header "#GENE", and 2) Column 2 will be the number of heterozygous controls, 3) Column 3 will be the number of homozygous controls, and 4) Column 4 will be the total AC 
