@@ -156,7 +156,7 @@ vcffile.close()
 
 #Generate output counts
 outfile=open(options.outfilename, "w")
-outfile.write("#GENE\tCASE_COUNT_ALL\tCASE_COUNT_CH\tCASE_COUNT_HOM\tCASE_TOTAL_AC\n")
+outfile.write("#GENE\tCASE_COUNT_HET\tCASE_COUNT_CH\tCASE_COUNT_HOM\tCASE_TOTAL_AC\n")
 snpfile=open(options.snpfilename, "r")
 for line_s1 in snpfile:
 	line_s=line_s1.rstrip('\n').split('\t')
