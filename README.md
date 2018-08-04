@@ -126,6 +126,7 @@ Additional Options
 
 11) --bedfile: Path to a bed file for regions of interest. Only regions that are within the bed file-defined regions will be kept. If this option is not supplied, then the entire VCF will be used. Caution that if your chromosome names start in "chr" (e.g., "chr1"), then your bed file should be formatted similarly.
 
+Output: The output file will contain three columns: Column 1 will be a list of genes and will have the header "#GENE", Column 2 will be the number of heterozygous cases with the header "CASE_COUNT_HET", Column 3 will be the number of potentially compound heterozygous cases (those carrying 2 variants in the gene), with the header "CASE_COUNT_CH", and Column 4 will be the number of homozygous cases with the header "CASE_COUNT_HOM", and column 5 will be the total AC in the gene with the header "CASE_TOTAL_AC".
 
 **2b) Counting carriers in public control cohorts**
 This script will tabulate the approximate number of controls carrying qualifying variants in each gene as defined by a SNP file. Currently, this script has been configured to run using ExAC (http://exac.broadinstitute.org/downloads) or gnomAD (http://gnomad.broadinstitute.org/) data. The script will generate two counts for each gene:
@@ -159,4 +160,4 @@ Additional Options
 
 12) --bedfile: Path to a bed file for regions of interest. Only regions that are within the bed file-defined regions will be kept. If this option is not supplied, then the entire VCF will be used. Caution that if your chromosome names start in "chr" (e.g., "chr1"), then your bed file should be formatted similarly.
 
-Output: The output file will contain three columns: 1) Column 1 will be a list of genes and will have the header "#GENE", and 2) Column 2 will be the number of heterozygous controls, 3) Column 3 will be the number of homozygous controls, and 4) Column 4 will be the total AC 
+Output: The output file will contain three columns: Column 1 will be a list of genes and will have the header "#GENE", Column 2 will be the number of heterozygous controls, Column 3 will be the number of homozygous controls, and Column 4 will be the total AC 
