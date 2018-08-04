@@ -103,15 +103,31 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 		else:	
 			af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0])
 	if options.database=="gnomad":
-		ac_hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0]
+		if "ALL" in pops:
+			hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0]
+		elif "ALL" not in pops:
+			ac_out=0
+               		hom_out=0
+			for p in range(0, len(pops), 1):
+				temp_pop=pops[p]
+				ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0])
+				hom_out=int(ac_hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0])
 	elif options.database=="exac":
-		ac_hom_out=(";"+vcfline).split((";AC_Hom="))[1].split(";")[0]
+		if "ALL" in pops:
+			hom_out=(";"+vcfline).split((";AC_Hom="))[1].split(";")[0]
+		elif "ALL" not in pops:
+			ac_out=0
+               		hom_out=0
+			for p in range(0, len(pops), 1):
+				temp_pop=pops[p]
+				ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0])
+				hom_out=int(ac_hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0])
+
 	elif options.database=="generic":
 		if options.homcol is not None:
-			ac_hom_out=(";"+vcfline).split((options.homcol))[1].split(";")[0]
+			hom_out=(";"+vcfline).split((options.homcol))[1].split(";")[0]
 		else:
-			ac_hom_out=0
-
+			hom_out=0
 	
 	if popmax_af<1:
 		af_popmax_out=get_popmax(vcfline)
@@ -122,14 +138,8 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 
 	if (ac_out>float(max_ac)) or (af_out>float(max_af)) or (an<float(min_an)) or (af_popmax_out>float(popmax_af)):
 		ac_out=0
-		ac_hom_out=0
-	elif "ALL" not in pops:
-		ac_out=0
-                ac_hom_out=0
-		for p in range(0, len(pops), 1):
-			temp_pop=pops[p]
-			ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0])
-			ac_hom_out=int(ac_hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0])
+		hom_out=0
+	
 	return [ac_out, ac_hom_out]
 
 
@@ -154,13 +164,13 @@ def get_popmax(vcfline):
 
 def sumcount(genesnps, snptable):
 	ac_sum=0
-	ac_hom_sum=0
+	hom_sum=0
 	for s in range(0, len(genesnps), 1):
 		if genesnps[s] in snptable:
 			tempsnp=genesnps[s]
 			ac_sum=ac_sum+int(snptable[tempsnp][1])
-			ac_hom_sum=ac_hom_sum+int(snptable[tempsnp][2])
-	return [ac_sum, ac_hom_sum]
+			hom_sum=hom_sum+int(snptable[tempsnp][2])
+	return [ac_sum, hom_sum]
 
 #Make list of all SNPs across all genes present in snpfile
 allsnplist=makesnplist(options.snpfilename)
@@ -193,14 +203,14 @@ vcffile.close()
 
 #Write output
 outfile=open(options.outfilename, "w")
-outfile.write("#GENE\tCONTROL_COUNT_ALL\tCONTROL_COUNT_HOM\tCONTROL_TOTAL_AC\n")
+outfile.write("#GENE\tCONTROL_COUNT_HET\tCONTROL_COUNT_HOM\tCONTROL_TOTAL_AC\n")
 snpfile=open(options.snpfilename, "r")
 for line_s1 in snpfile:
 	line_s=line_s1.rstrip('\n').split('\t')
 	if line_s[0][0]!="#":
 		genesnplist=list(set(line_s[1].split(',')))
 		sumcounts=sumcount(genesnplist, count_table)
-		outfile.write(line_s[0]+"\t"+str(sumcounts[0])+"\t"+str(sumcounts[1])+"\t"+str(sumcounts[0]+2*sumcounts[1])+'\n')
+		outfile.write(line_s[0]+"\t"+str(sumcounts[0]-2*sumcounts[1])+"\t"+str(sumcounts[1])+"\t"+str(sumcounts[0])+'\n')
 outfile.close()
 snpfile.close()
 
