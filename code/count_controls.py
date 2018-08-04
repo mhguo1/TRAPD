@@ -104,7 +104,7 @@ def extractcountsgnomad(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 		ac_hom_out=(";"+vcfline).split((";AC_Hom="))[1].split(";")[0]
 	elif options.database=="generic":
 		if options.homcol is not None:
-			ac_hom_out=(";"+vcfline).split((args$homcol))[1].split(";")[0]
+			ac_hom_out=(";"+vcfline).split((options.homcol))[1].split(";")[0]
 		else:
 			ac_hom_out=0
 
