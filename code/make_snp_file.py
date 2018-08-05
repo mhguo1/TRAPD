@@ -65,14 +65,19 @@ def checkfilter(infofilter):
 	
 #Read in vcf header and extract all INFO fields
 info_fields=[]
+chrformat="number"
 vcffile=gzip.open(options.vcffilename, "rb")
 for line_vcf1 in vcffile:
 	if line_vcf1[0]=="#":
 		if "##INFO=<ID=" in line_vcf1:
 			temp_field=line_vcf1.split("##INFO=<ID=")[1].split(",")[0]
 			info_fields.append(temp_field)
+		elif "##contig" in line_vcf1:
+                	if "ID=chr" in line_vcf1:
+                        	chrformat="chr"
 	else:
 		break
+vcffile.close()
 		
 #Read in vcf header to get VEP CSQ fields
 if options.vep:
@@ -137,7 +142,6 @@ def is_number(s):
     except ValueError:
         return False
 
-
 def test_include_info(filter, vcfline):
         option_field=filter.split("[")[0]
         option_value=filter.split("]")[1]
@@ -154,7 +158,6 @@ def test_include_info(filter, vcfline):
 			else:
 				return 0
 		else:
-    #   			field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
         		if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
 				return 1
         		else:
@@ -263,12 +266,16 @@ snptable={}
 
 
 #Open vcf file
+vcffile=BedTool(options.vcffilename)
 if options.bedfilename is not None:
-	vcffile=BedTool(options.vcffilename)
-	bed=BedTool(options.bedfilename)
-	vcffile_temp=vcffile.intersect(bed)
+        bed=BedTool(options.bedfilename)
+        vcffile_temp=vcffile.intersect(bed)
 else:
-	vcffile_temp=BedTool(options.vcffilename)
+        if chrformat=="chr":
+                dummy_bed=BedTool('chr1000 100000000 100000001', from_string=True)
+        else:
+                dummy_bed=BedTool('1000 100000000 100000001', from_string=True)
+        vcffile_temp=vcffile.subtract(dummy_bed)
 
 for line_vcf1 in open(vcffile_temp.fn):
 	line_vcf=line_vcf1.rstrip().split('\t')
