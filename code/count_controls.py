@@ -112,44 +112,44 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 				af_out=float(ac_out)/float(an_out)
 		else:	
 			af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0])
-	if options.database=="gnomad":
-		if "ALL" in pops:
-			hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0]
-		elif "ALL" not in pops:
-			ac_out=0
-               		hom_out=0
-			for p in range(0, len(pops), 1):
-				temp_pop=pops[p]
-				ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0])
-				hom_out=int(hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0])
-	elif options.database=="exac":
-		if "ALL" in pops:
-			hom_out=(";"+vcfline).split((";AC_Hom="))[1].split(";")[0]
-		elif "ALL" not in pops:
-			ac_out=0
-               		hom_out=0
-			for p in range(0, len(pops), 1):
-				temp_pop=pops[p]
-				ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0])
-				hom_out=int(hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0])
-
-	elif options.database=="generic":
-		if options.homcol is not None:
-			hom_out=(";"+vcfline).split((options.homcol))[1].split(";")[0]
-		else:
-			hom_out=0
-	
+			
 	if popmax_af<1:
 		af_popmax_out=get_popmax(vcfline)
 	else:
                 af_popmax_out=1
-	
-        af_popmax_out=float(af_popmax_out)
+		
+	        af_popmax_out=float(af_popmax_out)
 
 	if (ac_out>float(max_ac)) or (af_out>float(max_af)) or (an<float(min_an)) or (af_popmax_out>float(popmax_af)):
 		ac_out=0
 		hom_out=0
-	
+	else:
+		if options.database=="gnomad":
+			if "ALL" in pops:
+				hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0]
+			elif "ALL" not in pops:
+				ac_out=0
+               			hom_out=0
+				for p in range(0, len(pops), 1):
+					temp_pop=pops[p]
+					ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0])
+					hom_out=int(hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0])
+		elif options.database=="exac":
+			if "ALL" in pops:
+				hom_out=(";"+vcfline).split((";AC_Hom="))[1].split(";")[0]
+			elif "ALL" not in pops:
+				ac_out=0
+               			hom_out=0
+				for p in range(0, len(pops), 1):
+					temp_pop=pops[p]
+					ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0])
+					hom_out=int(hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0])
+
+		elif options.database=="generic":
+			if options.homcol is not None:
+				hom_out=(";"+vcfline).split((options.homcol))[1].split(";")[0]
+			else:
+				hom_out=0	
 	return [ac_out, hom_out]
 
 
