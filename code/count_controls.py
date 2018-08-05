@@ -56,7 +56,17 @@ if options.database=="exac":
 		   parser.error('Please check the populations listed')
 if options.database=="generic" and "ALL" not in pops:
 	parser.error('Please check the populations listed for your control database')
-	
+
+#Find out chromosome format
+vcffile=gzip.open(options.vcffilename, "rb")
+chrformat="number"
+for line_vcf1 in vcffile:
+	line_vcf=line_vcf1.split("\t")
+	if "##contig" in line_vcf[0]:
+		if "ID=chr" in line_vcf[0]:
+			chrformat="chr"
+vcffile.close()
+			
 #Check generic database to make sure it has AC, AN and AF
 if options.database=="generic":
 	vcffile=gzip.open(options.vcffilename, "rb")
@@ -184,7 +194,10 @@ if options.bedfilename is not None:
         bed=BedTool(options.bedfilename)
         vcffile_temp=vcffile.intersect(bed)
 else:
-        dummy_bed=BedTool('1000 100000000 100000001', from_string=True)
+        if chrformat=="chr":
+                dummy_bed=BedTool('chr1000 100000000 100000001', from_string=True)
+        else:
+                dummy_bed=BedTool('1000 100000000 100000001', from_string=True)
         vcffile_temp=vcffile.subtract(dummy_bed)
 
 for line_vcf1 in open(vcffile_temp.fn):
