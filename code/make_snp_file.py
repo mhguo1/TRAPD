@@ -259,6 +259,7 @@ def get_operator_fn(op):
 	'>=' : operator.gt,
 	'=' : operator.eq,
 	'!=' : operator.ne,
+	'%' : operator.contains,
    }[op]
 
 #Create empty snptable
