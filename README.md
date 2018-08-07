@@ -40,7 +40,7 @@ Required Options
 
 3) --genecolname: This is a field within the INFO field of your vcf telling the script which gene that variant belongs to. For SNPEFF, this is typically SNPEFF_GENENAME. If you used VEP to annotate your vcf (see Step 0), you must supply the --vep option below, and you'll use the column name within the CSQ field for VEP (usually "genename" or the like).
 
-Additional Options
+Additional Options:
 1) INFO field filter options (--includeinfo, --excludeinfo): These are criteria based on the INFO field of your vcf to include or exclude variants. You may include as many inclusion or exclusion criteria as you wish. 
 
 These criteria are structured as: "FIELD[operator]threshold". Here, FIELD is any field within the INFO field of your vcf (e.g., AC, ExAC_AF, AF). Operator is any operator in: 
@@ -107,7 +107,7 @@ Required Options
 
 3) -o, --outfile: This is a path to your desired outfile name: e.g., /Users/smith/dat/out.txt. The default is "case_counts.txt"
 
-Additional Options
+Additional Options:
 4) --snpformat: Format for SNPs. Default is "VCFID". Your SNPs may be defined in any one of two ways.  If you supply the option "VCFID", then the program will use the VCF variant name in column 3 of your vcf (often rsIDs). Alternatively, you may supply "CHRPOSREFALT", in which case variants will be formatted as chr:pos:ref:alt (e.g., 1:1000:A:T).
 
 5) --samplefile: Optional file containing list of samples to use. File should contain one sample per row. Only samples in this list and in the VCF will be used. 
@@ -141,7 +141,7 @@ Required Options
 
 3) -o, --outfile: This is a path to your desired outfile name: e.g., /Users/smith/dat/out.txt. The default is "case_counts.txt"
 
-Additional Options
+Additional Options:
 4) --snpformat: Format for SNPs. Default is "VCFID". Your SNPs may be defined in any one of two ways.  If you supply the option "VCFID", then the program will use the VCF variant name in column 3 of your vcf (often rsIDs). Alternatively, you may supply "CHRPOSREFALT", in which case variants will be formatted as chr:pos:ref:alt (e.g., 1:1000:A:T).
 
 5) --pop: Comma separated list of continental populations to use. For ExAC, these include AFR, AMR, EAS, FIN, NFE, SAS, OTH.  For gnomad, these include AFR, AMR, ASJ, EAS, FIN, NFE, SAS, OTH. If ALL is included, then all populations are used. The default is "ALL"
@@ -161,3 +161,21 @@ Additional Options
 12) --bedfile: Path to a bed file for regions of interest. Only regions that are within the bed file-defined regions will be kept. If this option is not supplied, then the entire VCF will be used. Caution that if your chromosome names start in "chr" (e.g., "chr1"), then your bed file should be formatted similarly.
 
 Output: The output file will contain three columns: Column 1 will be a list of genes and will have the header "#GENE", Column 2 will be the number of heterozygous controls, Column 3 will be the number of homozygous controls, and Column 4 will be the total AC 
+
+
+**3) Run burden testing**
+This script will run the actual burden testing. It perform's a one-sided Fisher's exact test to determine if there is a greater burden of qualifying variants in cases as compared to controls for each gene. It will perform this burden testing under a dominant and a recessive model.
+
+It requires R; the script was tested using R v3.1, but any version of R should work.
+
+The script has 5 required options:
+1) --casefile: Path to the counts file for the cases, as generated in Step 2A
+2) --casesize: Number of cases that were tested in Step 2A
+3) --controlfile: Path to the counts file for the controls, as generated in Step 2B
+4) --controlsize: Number of controls that were tested in Step 2B. If using ExAC or gnomAD, please refer to the respective documentation for total sample size
+5) --output: Output file path/name
+
+Output: A tab delimited file with 10 columns: Column 1 will be a list of genes and will have the header "#GENE", Column 2 will be the number of heterozygous cases with the header "CASE_COUNT_HET", Column 3 will be the number of potentially compound heterozygous cases (those carrying 2 variants in the gene), with the header "CASE_COUNT_CH", Column 4 will be the number of homozygous cases with the header "CASE_COUNT_HOM", and column 5 will be the total AC in the gene with the header "CASE_TOTAL_AC", Column 6 will be the number of heterozygous controls, Column 7 will be the number of homozygous controls, and Column 8 will be the total AC, Column 9 will be the p-value under the dominant model, and Column 10 will be the p-value under the recessive model.
+
+
+
