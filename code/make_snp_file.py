@@ -58,7 +58,7 @@ if options.snponly and options.indelonly:
 
 #Check to make sure all the filters seem well formed
 def checkfilter(infofilter):
-	if ("[" not in infofilter) or (infofilter.startswith("]")) or (infofilter.endswith("]")) or str(infofilter.split("[")[1].split("]")[0]) not in ["<", ">", "<=", ">=", "=", "!=", "in"]:
+	if ("[" not in infofilter) or (infofilter.startswith("]")) or (infofilter.endswith("]")) or str(infofilter.split("[")[1].split("]")[0]) not in ["<", ">", "<=", ">=", "=", "!=", "in", "%"]:
 		return 0
 	else:
 		return 1
