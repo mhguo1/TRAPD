@@ -28,8 +28,16 @@ for(i in 1:nrow(dat)){
   case_count<-dat[i,]$CASE_COUNT_HET+dat[i,]$CASE_COUNT_CH+dat[i,]$CASE_COUNT_HOM
   control_count<-dat[i,]$CONTROL_COUNT_HET+dat[i,]$CONTROL_COUNT_HOM
   
-  if(case_count>args$casesize){case_count<-args$casesize}
-  if(control_count>args$controlsize){control_count<-args$controlsize}
+  if(case_count>args$casesize){
+    case_count<-args$casesize
+  }else if(case_count<0){
+    case_count<-0
+   }
+  if(control_count>args$controlsize){
+    control_count<-args$controlsize
+  }else if(control_count<0){
+    control_count<-0
+   }
   
   mat<-cbind(c(case_count, (args$casesize-case_count)), c(control_count, (args$controlsize-control_count)))
   dat[i,]$P_DOM<-fisher.test(mat, alternative="greater")$p.value
