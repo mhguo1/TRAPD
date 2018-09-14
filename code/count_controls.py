@@ -24,8 +24,8 @@ parser.add_option("-d", "--database", action="store", dest="database", default="
 parser.add_option("--pass", action="store_true", dest="passfilter")
 parser.add_option("--maxAF", action="store",dest="maxAF", default=1)
 parser.add_option("--maxAC", action="store",dest="maxAC", default=99999)
-parser.add_option("--popmaxAF", action="store",dest="popmaxAF", default=1)
 parser.add_option("--minAN", action="store",dest="minAN", default=0)
+parser.add_option("--popmaxAF", action="store",dest="popmaxAF", default=1)
 parser.add_option("--homcol", action="store",dest="homcol")
 parser.add_option("--bedfile", action="store", dest="bedfilename")
 
