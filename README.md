@@ -183,3 +183,6 @@ Citing TRAPD:
 Guo MH, Plummer L, Chan Y-M, Hirschhorn JN, Lippincott MF. Burden testing of rare variants identified through exome sequencing using publicly available control data. American Journal of Human Genetics. 2018 (manuscript in press).
 
 
+Contact:
+For questions, suggestions, and bugs, please contact Michael Guo at mguo at broadinstitute.org
+
