@@ -1,7 +1,7 @@
 # TRAPD
 
 
-Finding novel Mendelian disease genes can often be challenging. While some disorders are amenable to family-based analyses (e.g., linkage or segregation), others may be very challenging for a number of reasons. One approach is to use burden testing, where the aggregate burden of rare protein-altering variants in each gene is tested against a set of controls. While one may use a set of available control sequencing data, this is generally too expensive and unavailable in most circumstances. Here, we provide a simple-to-use program called TRAPD (Testing Rare vAriants using Public Data) that allows for burden testing against publicly available summary level data (e.g., ExAC or gnomAD).
+Finding novel Mendelian disease genes can often be challenging. While some disorders are amenable gene discovery to family-based analyses (e.g., linkage or segregation), others may be very challenging for a number of reasons. One approach go identify genes associated with disease is to use burden testing, where the aggregate burden of rare protein-altering variants in each gene is tested against a set of controls. While one may use a set of available control sequencing data, this is generally too expensive and unavailable in most circumstances. Here, we provide a simple-to-use program called TRAPD (Testing Rare vAriants using Public Data) that allows for burden testing against publicly-available summary level data (e.g., ExAC or gnomAD).
 
 Requirements:
 TRAPD is written in Python and R. For Python, it is recommended to use Python version 2.7. For R, any version 2.+ should be okay.
@@ -18,16 +18,17 @@ BEDTools (http://bedtools.readthedocs.io/en/latest/) must also be loaded in the 
 There are several pre-processing steps that are necessary before running TRAPD: 1) Separating multi-allelic variants, 2) left-aligning indels, 3) annotating your vcf. Below, we provide several sample command lines for performing these steps:
 
 	0.1-0.2) Separating multi-allelics and left-aligning indels:
-	There are several ways to do this. Please see https://genome.sph.umich.edu/wiki/Variant_Normalization for additional details on this problem. We use Bcftools to accomplish these two steps using Bcftools (https://samtools.github.io/bcftools/bcftools.html):
+	There are several ways to do this. Please see https://genome.sph.umich.edu/wiki/Variant_Normalization for additional details on this problem. We use Bcftools to accomplish these two steps:
+	(https://samtools.github.io/bcftools/bcftools.html):
 	bcftools norm -m -any in.vcf.gz | bcftools norm -f Homo_sapiens_assembly19.fasta | bgzip > out.vcf.gz
 	
 	0.3) Annotation:
-	For variant annotation, we typically use VEP (https://www.ensembl.org/info/docs/tools/vep/script/index.html) and have achieved the best results with VEP. Several additional annotators include SnpEff (http://snpeff.sourceforge.net/) and ANNOVAR (http://annovar.openbioinformatics.org/en/latest/).
+	For variant annotation, we have achieved our best results using VEP (https://www.ensembl.org/info/docs/tools/vep/script/index.html). Several additional annotators include SnpEff (http://snpeff.sourceforge.net/) and ANNOVAR (http://annovar.openbioinformatics.org/en/latest/).
 	We highly recommend annotating the case and control data in the same way.
 
 
 **1a) Creating a SNP file**
-A SNP file maps qualifying variants to each gene. Qualifying variants are variants that you think may be pathogenic (usually, rare protein-altering variants). You can create a separate SNP file for your cases and controls, or you can make the same SNP file. The SNP file has two columns: 1) Column 1 is your gene name, and 2) Column 2 is a comma separated list of variants assigned to that gene. A variant can be assigned to multiple genes. The header for this file is: "#GENE SNPS".
+A SNP file maps qualifying variants to each gene. Qualifying variants are variants that you think may be pathogenic, usually based on minor allele frequency and annotations of predicted effect o the variant (e.g., rare protein-altering variants). You can create a separate SNP file for your cases and controls, or you can make the same SNP file. The SNP file for TRAPD has two columns: 1) Column 1 is your gene name, and 2) Column 2 is a comma separated list of variants assigned to that gene. A variant can be assigned to multiple genes. The header for this file is: "#GENE SNPS".
 
 To create the SNP file, you must have an annotated vcf from which you define your gene names. The vcf does not need to have any genotypes (i.e., can be a sites-only vcf). 
 
@@ -43,20 +44,19 @@ Required Options
 Additional Options:
 1) INFO field filter options (--includeinfo, --excludeinfo): These are criteria based on the INFO field of your vcf to include or exclude variants. You may include as many inclusion or exclusion criteria as you wish. 
 
-These criteria are structured as: "FIELD[operator]threshold". Here, FIELD is any field within the INFO field of your vcf (e.g., AC, ExAC_AF, AF). Operator is any operator in: 
+These criteria are structured as: "FIELD[operator]threshold". Here, FIELD is any field within the INFO field of your vcf (e.g., AC, ExAC_AF, AF). Operator is any operator from the following: 
 	'<': less than
   	'<=' : less than or equal to
 	'>' : greater than
 	'>=' : greater than or equal to
  	 '=' : equals
   	'!=' : does not equal
-	"in": in
+	'in': in
   
- Note that these criteria MUST be surrounded by double quotation marks!
  Also, note that if you use the "in" operator, you should include a list of test values enclosed by parentheses (e.g., "annotation[in](missense,nonsense,frameshift)"
 
 Some examples:
---includeinfo "AC[<]5" #Filters in variants with Allele count (AC) less than five
+--includeinfo "AC[<]5" #Filters in variants with Aalele count (AC) less than five
 --excludeinfo "AF[>]0.05" #Filters out variants with allele frequency (AF) greater than 0.05
 --includeinfo "SNPEFF_EFFECT[=]missense" #Filters in variants with SNPEFF_EFFECT annotated as missense.
 
@@ -72,7 +72,7 @@ Variants that are kept will meet ALL criteria supplied!
 
 5) --pass: Keep only PASS variants based on the "FILTER" field of your vcf
 
-6) --genenull: Values for which a gene is to be considered null. Default is "NA" or ".". 
+6) --genenull: Values for which a gene is to be considered null. Default is "NA" or ".". Genes names having any of these values will be excluded from teh output.
 
 7) --vep: Option that should be supplied if you used VEP to annotate your vcf.
 
@@ -110,15 +110,15 @@ Required Options
 Additional Options:
 4) --snpformat: Format for SNPs. Default is "VCFID". Your SNPs may be defined in any one of two ways.  If you supply the option "VCFID", then the program will use the VCF variant name in column 3 of your vcf (often rsIDs). Alternatively, you may supply "CHRPOSREFALT", in which case variants will be formatted as chr:pos:ref:alt (e.g., 1:1000:A:T).
 
-5) --samplefile: Optional file containing list of samples to use. File should contain one sample per row. Only samples in this list and in the VCF will be used. 
+5) --samplefile: Optional file containing list of samples to use. The file should contain one sample per row. Only samples in this list and in the VCF will be used. 
 
 6) --pass: Keep only PASS variants based on the "FILTER" field of your vcf
 
-7) --maxAC: Keep only variants with allele count (AC) less than this value. Note that this is calculated based on all samples in the VCF (i.e., the INFO field is not used). The default is 99999.
+7) --maxAC: Keep only variants with allele count (AC) less than this value. Note that this is calculated based on all samples in the VCF. The default is 99999.
 
-8) --maxAF: Keep only variants with allele frequency (AF) less than this value. Note that this is calculated based on all samples in the VCF (i.e., the INFO field is not used). The default is 1.0.
+8) --maxAF: Keep only variants with allele frequency (AF) less than this value. Note that this is calculated based on all samples in the VCF. The default is 1.0.
 
-9) --minAN: Keep only variants with allele number (AN) greater than this value.  Note that this is based on the INFO/AF field in the VCF. The default is 0. 
+9) --minAN: Keep only variants with allele number (AN) greater than this value. The default is 0. 
 
 10) --popmaxAF: Keep only variants with population maximum allele frequency (AF) less than this value. If gnomAD or ExAC is used, this option will use the values from the downloaded vcf. If "generic" database is used, there must be a field in "INFO" called "AF_POPMAX". The default is 1.0.
 
@@ -164,7 +164,7 @@ Output: The output file will contain three columns: Column 1 will be a list of g
 
 
 **3) Run burden testing**
-This script will run the actual burden testing. It perform's a one-sided Fisher's exact test to determine if there is a greater burden of qualifying variants in cases as compared to controls for each gene. It will perform this burden testing under a dominant and a recessive model.
+This script will run the actual burden testing. It performs a one-sided Fisher's exact test to determine if there is a greater burden of qualifying variants in cases as compared to controls for each gene. It will perform this burden testing under a dominant and a recessive model.
 
 It requires R; the script was tested using R v3.1, but any version of R should work.
 
@@ -175,7 +175,11 @@ The script has 5 required options:
 4) --controlsize: Number of controls that were tested in Step 2B. If using ExAC or gnomAD, please refer to the respective documentation for total sample size
 5) --output: Output file path/name
 
-Output: A tab delimited file with 10 columns: Column 1 will be a list of genes and will have the header "#GENE", Column 2 will be the number of heterozygous cases with the header "CASE_COUNT_HET", Column 3 will be the number of potentially compound heterozygous cases (those carrying 2 variants in the gene), with the header "CASE_COUNT_CH", Column 4 will be the number of homozygous cases with the header "CASE_COUNT_HOM", and column 5 will be the total AC in the gene with the header "CASE_TOTAL_AC", Column 6 will be the number of heterozygous controls, Column 7 will be the number of homozygous controls, and Column 8 will be the total AC, Column 9 will be the p-value under the dominant model, and Column 10 will be the p-value under the recessive model.
+Output: A tab delimited file with 10 columns: Column 1 ("#GENE") will be a list of genes; Column 2 ("CASE_COUNT_HET") will be the number of heterozygous cases; Column 3 ("CASE_COUNT_CH") will be the number of potentially compound heterozygous cases (those carrying 2 variants in the gene); Column 4 ("CASE_COUNT_HOM") will be the number of homozygous cases; Column 5 ("CASE_TOTAL_AC") will be the total AC in the gene for cases; Column 6 will be the estimated number of heterozygous controls ("CONTROL_COUNT_HET"); Column 7 will be the number of homozygous controls ("CONTROL_COUNT_HOM"), and Column 8 will be the total AC in controls ("CONTROL_TOTAL_AC"), Column 9 ("P_DOM") will be the p-value under the dominant model, and Column 10 ("P_REC") will be the p-value under the recessive model.
 
+
+
+Citing TRAPD:
+Guo MH, Plummer L, Chan Y-M, Hirschhorn JN, Lippincott MF. Burden testing of rare variants identified through exome sequencing using publicly available control data. American Journal of Human Genetics. 2018 (manuscript in press).
 
 
