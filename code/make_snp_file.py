@@ -246,7 +246,7 @@ def find_vep_gene(genecolname, vcfline, csq_anno):
         return genename
 
 def find_info_gene(genecolname, vcfline):
-	if genecolname in vcfile:		
+	if genecolname in vcfline:		
         	genename=(";"+vcfline).split(";"+genecolname+"=")[1].split(";")[0]
         return genename
 	
