@@ -35,7 +35,7 @@ if not options.vcffilename:   # if filename is not given
 	parser.error('A vcf file is needed')
 	sys.exit()
 
-if options.vcffilename.endswith(".gz") is False:   # if vcf filename is not given
+if (options.vcffilename.endswith(".gz") is False) and (options.vcffilename.endswith(".bgz") is False):   # if vcf filename is not given
 	parser.error('Is your vcf file gzipped?')
 	sys.exit()
 
@@ -84,10 +84,11 @@ if options.vep:
 	vcffile=gzip.open(options.vcffilename, "rb")
 	csq_found=0
 	for line_vcf1 in vcffile:
-		if line_vcf1[0]=="#" and ("ID=CSQ" in line_vcf1):
-			csq_anno=line_vcf1.rstrip('\n').replace('"', '').strip('>').split("Format: ")[1].split("|")
-			csq_found=1
-			break
+		if line_vcf1[0]=="#":
+			if ("ID=CSQ" in line_vcf1) or ("ID=vep" in line_vcf1):
+				csq_anno=line_vcf1.rstrip('\n').replace('"', '').strip('>').split("Format: ")[1].split("|")
+				csq_found=1
+				break
 	if csq_found==0:
 		sys.stdout.write("VEP CSQ annotations not found in vcf header\n")
 		sys.exit()
@@ -192,6 +193,7 @@ def test_include_vep(filter, vcfline, csq_anno):
 	option_field=filter.split("[")[0]
 	csq_index=csq_anno.index(option_field)
         option_value=filter.split("]")[1]
+	vcfline=vcfline.replace("vep=", "CSQ=")
 	if "CSQ=" in vcfline and (csq_index-1)<=len((";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")):
 		field_value=(";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")[csq_index]
 		if filter.split("[")[1].split("]")[0]=="in":
@@ -217,6 +219,7 @@ def test_exclude_vep(filter, vcfline, csq_anno):
 	option_field=filter.split("[")[0]
 	csq_index=csq_anno.index(option_field)
         option_value=filter.split("]")[1]
+	vcfline=vcfline.replace("vep=", "CSQ=")
 	if "CSQ=" in vcfline and (csq_index-1)<=len((";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")):
 		field_value=(";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")[csq_index]
 		if filter.split("[")[1].split("]")[0]=="in":
@@ -239,6 +242,7 @@ def test_exclude_vep(filter, vcfline, csq_anno):
 	
 def find_vep_gene(genecolname, vcfline, csq_anno):
         csq_index=csq_anno.index(genecolname)
+	vcfline=vcfline.replace("vep=", "CSQ=")
         if "CSQ" in vcfline:
                 genename=(";"+vcfline).split(";CSQ=")[1].split(";")[0].split(",")[0].split("|")[csq_index]
         else:
