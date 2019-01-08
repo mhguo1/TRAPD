@@ -174,9 +174,8 @@ for line_s1 in snpfile:
 	if line_s[0][0]!="#":
 		genesnplist=list(set(line_s[1].split(',')))
 		counts=calculatecount(genesnplist, count_table)
-		outfile.write(line_s[0]+"\t"+str(counts[0])+"\t"+str(counts[1])+"\t"+str(counts[2])+'\n')
+		outfile.write(line_s[0]+"\t"+str(counts[0])+"\t"+str(counts[1])+"\t"+str(counts[2])+"\t"+str(counts[3])+'\n')
 outfile.close()
 snpfile.close()
-
 
 #python count_case.py -s test.out.txt -o counts.txt -v test.ihh.vcf.gz --snpformat CHRPOSREFALT
