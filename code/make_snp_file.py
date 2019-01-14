@@ -123,7 +123,7 @@ if options.includevep is not None:
 			sys.stdout.write(str(options.includevep[i])+" is malformed\n")
 			sys.exit()
 		if options.includevep[i].split("[")[0] not in csq_anno:
-			sys.stdout.write(str(options.includeinfo[i])+" is not in VCF file\n")
+			sys.stdout.write(str(options.includevep[i])+" is not in VCF file\n")
 			sys.exit()
 if options.excludevep is not None:
 	for i in range(0, len(options.excludevep), 1):
@@ -131,7 +131,7 @@ if options.excludevep is not None:
 			sys.stdout.write(str(options.excludevep[i])+" is malformed\n")
 			sys.exit()
 		if options.excludevep[i].split("[")[0] not in csq_anno:
-			sys.stdout.write(str(options.excludeinfo[i])+" is not in VCF file\n")
+			sys.stdout.write(str(options.excludevep[i])+" is not in VCF file\n")
 			sys.exit()
 		
 		 
