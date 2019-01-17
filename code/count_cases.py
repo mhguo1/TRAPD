@@ -13,7 +13,7 @@ parser.add_option("-s", "--snpfile", action="store",dest="snpfilename") #File ma
 parser.add_option("-v", "--vcffile", action="store",dest="vcffilename") #Path to vcf file
 parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="case_counts.txt") #Output file name 
 
-parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID") #Field in which to get SNP names. If not VCF ID, then CHR:POS:REF:ALT is used
+parser.add_option("--snpformat", action="store",dest="snpformat", default="CHRPOSREFALT") #Field in which to get SNP names. If not VCF ID, then CHR:POS:REF:ALT is used
 parser.add_option("--samplefile", action="store",dest="samplefilename", default="ALL")
 
 #Optional Filters
