@@ -25,7 +25,7 @@ parser.add_option("--snponly", action="store_true", dest="snponly")
 parser.add_option("--indelonly", action="store_true", dest="indelonly")
 parser.add_option("--bedfile", action="store", dest="bedfilename")
 
-parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID")
+parser.add_option("--snpformat", action="store",dest="snpformat", default="CHRPOSREFALT")
 parser.add_option("--genenull", action="store", dest="genenull", default=".,NA")
 
 options, args = parser.parse_args()
