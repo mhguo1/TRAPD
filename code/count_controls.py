@@ -16,7 +16,7 @@ parser.add_option("-v", "--vcffile", action="store",dest="vcffilename")
 
 parser.add_option("-o", "--outfile", action="store",dest="outfilename", default="control_counts.txt")
 
-parser.add_option("--snpformat", action="store",dest="snpformat", default="VCFID")
+parser.add_option("--snpformat", action="store",dest="snpformat", default="CHRPOSREFALT")
 parser.add_option("--pop", action="store",dest="pop", default="ALL")
 parser.add_option("-d", "--database", action="store", dest="database", default="generic")
 
