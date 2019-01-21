@@ -89,7 +89,8 @@ def findcarriers(vcfline, gtname, snpformat, samplelist, max_ac, max_af, min_an)
 	if (ac_file>float(max_ac)) or (af_file>float(max_af)) or (an_file<float(min_an)):
 		return [[],[], 0]
 	else:
-		return [hetcarriers, homcarriers, ac_file]
+		ac_out=len(hets)+(2*len(homs))
+		return [hetcarriers, homcarriers, ac_out]
 
 
 def makesnplist(snpfile):
@@ -157,7 +158,8 @@ for line_vcf1 in open(vcffile_temp.fn):
 				snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
 			if snpid in allsnplist:
 				counts=findcarriers(line_vcf, options.gtfield, options.snpformat, sampleindices, options.maxAC, options.maxAF, options.minAN)
-				count_table[snpid]=[snpid, counts[0], counts[1], counts[2]]
+				if counts[2]>0:
+					count_table[snpid]=[snpid, counts[0], counts[1], counts[2]]
 		
 	#Find indices of samples in the sample file
 	#elif line_vcf[0]=="#CHROM":
