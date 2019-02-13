@@ -109,7 +109,7 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 			if ";AF=" in vcfline:
 				af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0])
 			else:
-				af_out=float(ac_out)/float(an_out)
+				af_out=float(ac_out)/float(an)
 		else:	
 			af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0])
 			
