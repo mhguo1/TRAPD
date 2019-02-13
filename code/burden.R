@@ -25,7 +25,7 @@ dat$P_REC<-0
 for(i in 1:nrow(dat)){
   
   #Dominant model
-  case_count<-dat[i,]$CASE_COUNT_HET+dat[i,]$CASE_COUNT_CH+dat[i,]$CASE_COUNT_HOM
+  case_count<-dat[i,]$CASE_COUNT_HET+dat[i,]$CASE_COUNT_HOM
   control_count<-dat[i,]$CONTROL_COUNT_HET+dat[i,]$CONTROL_COUNT_HOM
   
   if(case_count>args$casesize){
