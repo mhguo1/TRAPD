@@ -125,7 +125,7 @@ Additional Options:
 
 Output: The output file will contain five columns:
 - #GENE: gene name
-- CASE_COUNT_HET: # of individuals carrying one (and exactly one) heterozygous qualifying variant in the gene
+- CASE_COUNT_HET: # of individuals carrying at least one heterozygous qualifying variant in the gene
 - CASE_COUNT_CH: # of individuals carrying at least two heterozygous qualifying variants in the gene
 - CASE_COUNT_HOM: # of individuals carrying at least one homozygous qualifying variant in the gene.
 - CASE_TOTAL_AC: total AC of qualifying variants in the gene.
