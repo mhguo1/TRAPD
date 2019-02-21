@@ -26,6 +26,9 @@ There are several pre-processing steps that are necessary before running TRAPD: 
 	For variant annotation, we have achieved our best results using VEP (https://www.ensembl.org/info/docs/tools/vep/script/index.html). Several additional annotators include SnpEff (http://snpeff.sourceforge.net/) and ANNOVAR (http://annovar.openbioinformatics.org/en/latest/).
 	We highly recommend annotating the case and control data in the same way.
 	
+	0.4) Read depth filter:
+	Optional step if you want to filter for sites meeting certain criteria, e.g., read depth. Please see code at bottom of page for how this was performed in our paper.
+	
 
 
 **1a) Creating a SNP file**
@@ -198,7 +201,9 @@ Output: A tab delimited file with 10 columns:
 
 
 
-**Creating read depth filter**
+
+
+**Creating read depth filter (Step 0.4)**
 As several users have requested our approach for read depth filtering, we have included code for how we filtered for sites with > 90% of samples having DP > 10
 
 We first downloaded the read depth files for gnomAD (https://storage.googleapis.com/gnomad-public/release/2.0.2/coverage/combined_tars/gnomad.exomes.r2.0.2.coverage.all.tar). We then subsetted on sites with >90% of samples with DP > 10 (column 7 of file). Using chr21 as an example:
