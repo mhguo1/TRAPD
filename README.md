@@ -220,6 +220,8 @@ bedtools intersect -a gnomad.dp10.bed -b cases.dp10.bed | sort -k1,1n -k2,2n | b
 
 
 
+
+
 Citing TRAPD:
 Guo MH, Plummer L, Chan Y-M, Hirschhorn JN, Lippincott MF. Burden testing of rare variants identified through exome sequencing using publicly available control data. American Journal of Human Genetics. 2018. 103(4):522-534.
 
