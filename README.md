@@ -25,6 +25,7 @@ There are several pre-processing steps that are necessary before running TRAPD: 
 	0.3) Annotation:
 	For variant annotation, we have achieved our best results using VEP (https://www.ensembl.org/info/docs/tools/vep/script/index.html). Several additional annotators include SnpEff (http://snpeff.sourceforge.net/) and ANNOVAR (http://annovar.openbioinformatics.org/en/latest/).
 	We highly recommend annotating the case and control data in the same way.
+	
 
 
 **1a) Creating a SNP file**
@@ -192,12 +193,30 @@ Output: A tab delimited file with 10 columns:
 - CONTROL_COUNT_HET: Approximate number of controls carrying heterozygous qualifying variants in a given gene 
 - CONTROL_COUNT_HOM: Number of controlss carrying homozygous qualifying variants in a given gene. 
 - CONTROL_TOTAL_AC: Total AC for a given gene.
-- P_DOM: p-value under the dominant model
+- P_DOM: p-value under the dominant model.
 - P_REC: p-value under the recessive model.
 
 
+
+**Creating read depth filter**
+As several users have requested our approach for read depth filtering, we have included code for how we filtered for sites with > 90% of samples having DP > 10
+
+We first downloaded the read depth files for gnomAD (https://storage.googleapis.com/gnomad-public/release/2.0.2/coverage/combined_tars/gnomad.exomes.r2.0.2.coverage.all.tar). We then subsetted on sites with >90% of samples with DP > 10 (column 7 of file). Using chr21 as an example:
+zcat gnomad.exomes.r2.0.2.chr21.coverage.txt.gz  | tail -n+2 | awk '$7>0.9 {print $1"\t"($2-1)"\t"$2}' | bedtools merge -i stdin > gnomad.dp10.bed 
+
+We then calculated read depth for case samples using GATK (v3.4):
+java -jar GATK.jar -T DepthOfCoverage -I bam.list -R human_g1k_v37.fasta --omitIntervalStatistics --omitLocusTable --minBaseQuality 0 --minMappingQuality 20 --includeRefNSites --countType COUNT_FRAGMENTS -o cases.counts.txt
+
+In analogous fashion to above, we then created a bed file for the cases containing only positions with > 90% of samples with DP > 10:
+zcat cases.counts.txt.gz | tail -n+2 | awk '{count=0} {for(i=4; i<1000; i++) if($i>10) count++} {if(count>0.9) print $1}' | awk -F":" '{print $1"\t"($2-1}"\t"$2}' | bedtools merge -i stdin > cases.dp10.bed
+
+Finally, we intersected the case and control bed files to get only positions meeting criteria for both datasets.
+bedtools intersect -a gnomad.dp10.bed -b cases.dp10.bed | sort -k1,1n -k2,2n | bedtools merge -i stdin > combined.dp10.bed
+
+
+
 Citing TRAPD:
-Guo MH, Plummer L, Chan Y-M, Hirschhorn JN, Lippincott MF. Burden testing of rare variants identified through exome sequencing using publicly available control data. American Journal of Human Genetics. 2018 (manuscript in press).
+Guo MH, Plummer L, Chan Y-M, Hirschhorn JN, Lippincott MF. Burden testing of rare variants identified through exome sequencing using publicly available control data. American Journal of Human Genetics. 2018. 103(4):522-534.
 
 
 Contact:
