@@ -291,10 +291,12 @@ for line_vcf1 in open(vcffile_temp.fn):
 				keep=0
 		if keep==1 and options.snponly:
 			if len(line_vcf[3])>1 or len(line_vcf[4])>1:
-				keep==0
+				keep=0
 		if keep==1 and options.indelonly:
 			if len(line_vcf[3])==1 and len(line_vcf[4])==1:
-				keep==0
+				keep=0
+		if "," in line_vcf[4]:
+			keep=0
   
  #Go through INFO field filters
 		if keep==1 and options.includeinfo is not None:
