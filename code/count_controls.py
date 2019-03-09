@@ -100,18 +100,18 @@ def makesnplist(snpfile):
 	snp_file.close()
 
 def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
-	ac_out=float((";"+vcfline).split((";AC="))[1].split(";")[0])
-	an=float((";"+vcfline).split((";AN="))[1].split(";")[0])
+	ac_out=float((";"+vcfline).split((";AC="))[1].split(";")[0].split(",")[0])
+	an=float((";"+vcfline).split((";AN="))[1].split(";")[0].split(",")[0])
 	if ac_out==0:
 		af_out=0
 	else:
 		if options.database=="generic":
 			if ";AF=" in vcfline:
-				af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0])
+				af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0].split(",")[0])
 			else:
 				af_out=float(ac_out)/float(an)
 		else:	
-			af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0])
+			af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0].split(",")[0])
 			
 	if popmax_af<1:
 		af_popmax_out=get_popmax(vcfline)
@@ -126,28 +126,28 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 	else:
 		if options.database=="gnomad":
 			if "ALL" in pops:
-				hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0]
+				hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0].split(",")[0]
 			elif "ALL" not in pops:
 				ac_out=0
                			hom_out=0
 				for p in range(0, len(pops), 1):
 					temp_pop=pops[p]
-					ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0])
-					hom_out=int(hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0])
+					ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0].split(",")[0])
+					hom_out=int(hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0].split(",")[0])
 		elif options.database=="exac":
 			if "ALL" in pops:
-				hom_out=(";"+vcfline).split((";AC_Hom="))[1].split(";")[0]
+				hom_out=(";"+vcfline).split((";AC_Hom="))[1].split(";")[0].split(",")[0]
 			elif "ALL" not in pops:
 				ac_out=0
                			hom_out=0
 				for p in range(0, len(pops), 1):
 					temp_pop=pops[p]
-					ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0])
-					hom_out=int(hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0])
+					ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0].split(",")[0])
+					hom_out=int(hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0].split(",")[0])
 
 		elif options.database=="generic":
 			if options.homcol is not None:
-				hom_out=(";"+vcfline).split((options.homcol))[1].split(";")[0]
+				hom_out=(";"+vcfline).split((options.homcol))[1].split(";")[0].split(",")[0]
 			else:
 				hom_out=0	
 	return [ac_out, hom_out]
@@ -156,15 +156,15 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 def get_popmax(vcfline):
 	if options.database in ["gnomad", "generic"]:
 		if ";AF_POPMAX=" in (";"+vcfline):
-			af_popmax_out=(";"+vcfline).split((";AF_POPMAX="))[1].split(";")[0]
+			af_popmax_out=(";"+vcfline).split((";AF_POPMAX="))[1].split(";")[0].split(",")[0]
         		if af_popmax_out==".":
               	 		af_popmax_out=0
 		else:
 			af_popmax_out=1
 	if options.database=="exac":
 		if (";AC_POPMAX=" in (";"+vcfline)) and (";AN_POPMAX" in (";"+vcfline)):
-			ac_popmax=(";"+vcfline).split((";AC_POPMAX="))[1].split(";")[0]
-			an_popmax=(";"+vcfline).split((";AN_POPMAX="))[1].split(";")[0]
+			ac_popmax=(";"+vcfline).split((";AC_POPMAX="))[1].split(";")[0].split(",")[0]
+			an_popmax=(";"+vcfline).split((";AN_POPMAX="))[1].split(";")[0].split(",")[0]
 			if str(ac_popmax)=="NA" or str(an_popmax)=="NA":
 				af_popmax_out=0
 			else:
