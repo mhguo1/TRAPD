@@ -202,7 +202,7 @@ else:
 
 for line_vcf1 in open(vcffile_temp.fn):
 	line_vcf=line_vcf1.rstrip().split('\t')
-	if line_vcf[0][0]!="#":
+	if line_vcf[0][0]!="#" and line_vcf[4]!=",":
 		if not (options.passfilter and line_vcf[6]!="PASS"):
 			if options.snpformat=="VCFID":
 				snpid=str(line_vcf[2])
