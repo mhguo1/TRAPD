@@ -207,7 +207,6 @@ def test_include_vep(filter, vcfline, csq_anno):
 			else:
 				return 0
 		else:
-       			
         		if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
 				return 1
 	        	else:
