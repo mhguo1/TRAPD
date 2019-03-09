@@ -29,7 +29,7 @@ There are several pre-processing steps that are necessary before running TRAPD: 
 	0.4) Read depth filter:
 	Optional step if you want to filter for sites meeting certain criteria, e.g., read depth. Please see code at bottom of page for how this was performed in our paper.
 	
-
+Please note that if you do not properly separate out multi-allelic varints, TRAPD will automatically remove that variant in later steps.
 
 **1a) Creating a SNP file**
 A SNP file maps qualifying variants to each gene. Qualifying variants are variants that you think may be pathogenic, usually based on minor allele frequency and annotations of predicted effect o the variant (e.g., rare protein-altering variants). You can create a separate SNP file for your cases and controls, or you can make the same SNP file. The SNP file for TRAPD has two columns: 1) Column 1 is your gene name, and 2) Column 2 is a comma separated list of variants assigned to that gene. A variant can be assigned to multiple genes. The header for this file is: "#GENE SNPS".
