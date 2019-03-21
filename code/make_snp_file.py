@@ -62,6 +62,25 @@ def checkfilter(infofilter):
 		return 0
 	else:
 		return 1
+
+#Filter to make sure that values are either all numeric or all str
+def consistent(option_value, field_value):
+        try:
+                float(option_value) or int(option_value)
+                try:
+                        float(field_value) or int(field_value)
+                        field_out=float(field_value)
+                        option_out=float(option_value)
+                        c=1
+                except ValueError:
+                        option_out=option_value
+                        field_out=field_value
+                        c=0
+        except ValueError:
+                field_out=str(field_value)
+                option_out=str(option_value)
+                c=1
+        return [option_out, field_out, c]
 	
 #Read in vcf header and extract all INFO fields
 info_fields=[]
@@ -146,46 +165,54 @@ def is_number(s):
 def test_include_info(filter, vcfline):
         option_field=filter.split("[")[0]
         option_value=filter.split("]")[1]
-	if option_field in vcfline:
+	if (";"+option_field+"=") in (";"+vcfline):
 		field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
-		if filter.split("[")[1].split("]")[0]=="in":
-			listvalues=option_value.lstrip("(").rstrip(")").split(',')
-			counter=0
-			for i in range(0, len(listvalues), 1):
-				if operator.eq(field_value, listvalues[i]):
-					counter+=1
-			if counter>0:
-				return 1
+		consist_out=consistent(option_value, field_value)
+		if consist_out[2]==1:
+			if filter.split("[")[1].split("]")[0]=="in":
+				listvalues=option_value.lstrip("(").rstrip(")").split(',')
+				counter=0
+				for i in range(0, len(listvalues), 1):
+					if operator.eq(field_value, listvalues[i]):
+						counter+=1
+				if counter>0:
+					return 1
+				else:
+					return 0
 			else:
-				return 0
+        			if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
+					return 1
+	        		else:
+        	        		return 0
 		else:
-        		if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
-				return 1
-        		else:
-                		return 0
+			return 1
 	else:
 		return 1
 
 def test_exclude_info(filter, vcfline):
         option_field=filter.split("[")[0]
         option_value=filter.split("]")[1]
-	if option_field in vcfline:
+	if (";"+option_field+"=") in (";"+vcfline):
 		field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
-		if filter.split("[")[1].split("]")[0]=="in":
-			listvalues=option_value.lstrip("(").rstrip(")").split(',')
-			counter=0
-			for i in range(0, len(listvalues), 1):
-				if operator.eq(field_value, listvalues[i]):
-					counter+=1
-			if counter>0:
-				return 0
+		consist_out=consistent(option_value, field_value)
+		if consist_out[2]==1:
+			if filter.split("[")[1].split("]")[0]=="in":
+				listvalues=option_value.lstrip("(").rstrip(")").split(',')
+				counter=0
+				for i in range(0, len(listvalues), 1):
+					if operator.eq(field_value, listvalues[i]):
+						counter+=1
+				if counter>0:
+					return 0
+				else:
+					return 1
 			else:
-				return 1
+        			if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
+					return 0
+        			else:
+                			return 1
 		else:
-        		if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
-				return 0
-        		else:
-                		return 1
+			return 1
 	else:
 		return 1
 
@@ -196,21 +223,25 @@ def test_include_vep(filter, vcfline, csq_anno):
 	vcfline=vcfline.replace("vep=", "CSQ=")
 	if "CSQ=" in vcfline and (csq_index-1)<=len((";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")):
 		field_value=(";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")[csq_index]
-		if filter.split("[")[1].split("]")[0]=="in":
-			listvalues=option_value.lstrip("(").rstrip(")").split(',')
-			counter=0
-			for i in range(0, len(listvalues), 1):
-				if operator.eq(field_value, listvalues[i]):
-					counter+=1
-			if counter>0:
-				return 1
+		consist_out=consistent(option_value, field_value)
+		if consist_out[2]==1:
+			if filter.split("[")[1].split("]")[0]=="in":
+				listvalues=option_value.lstrip("(").rstrip(")").split(',')
+				counter=0
+				for i in range(0, len(listvalues), 1):
+					if operator.eq(field_value, listvalues[i]):
+						counter+=1
+				if counter>0:
+					return 1
+				else:
+					return 0
 			else:
-				return 0
+        			if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
+					return 1
+	        		else:
+    					return 0
 		else:
-        		if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
-				return 1
-	        	else:
-        	       		return 0
+			return 1
 	else:
 		return 1
 	
@@ -221,21 +252,25 @@ def test_exclude_vep(filter, vcfline, csq_anno):
 	vcfline=vcfline.replace("vep=", "CSQ=")
 	if "CSQ=" in vcfline and (csq_index-1)<=len((";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")):
 		field_value=(";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")[csq_index]
-		if filter.split("[")[1].split("]")[0]=="in":
-			listvalues=option_value.lstrip("(").rstrip(")").split(',')
-			counter=0
-			for i in range(0, len(listvalues), 1):
-				if operator.eq(field_value, listvalues[i]):
-					counter+=1
-			if counter>0:
-				return 0
+		consist_out=consistent(option_value, field_value)
+		if consist_out[2]==1:
+			if filter.split("[")[1].split("]")[0]=="in":
+				listvalues=option_value.lstrip("(").rstrip(")").split(',')
+				counter=0
+				for i in range(0, len(listvalues), 1):
+					if operator.eq(field_value, listvalues[i]):
+						counter+=1
+				if counter>0:
+					return 0
+				else:
+					return 1
 			else:
-				return 1
+        			if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
+					return 0
+	        		else:
+        				return 1
 		else:
-        		if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
-				return 0
-        		else:
-               			return 1
+			return 1
 	else:
 		return 1
 	
