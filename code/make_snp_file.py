@@ -187,7 +187,7 @@ def test_include_info(filter, vcfline):
 		else:
 			return 0
 	else:
-		return 1
+		return 0
 
 def test_exclude_info(filter, vcfline):
         option_field=filter.split("[")[0]
@@ -214,7 +214,7 @@ def test_exclude_info(filter, vcfline):
 		else:
 			return 0
 	else:
-		return 1
+		return 0
 
 def test_include_vep(filter, vcfline, csq_anno):
 	option_field=filter.split("[")[0]
@@ -243,7 +243,7 @@ def test_include_vep(filter, vcfline, csq_anno):
 		else:
 			return 0
 	else:
-		return 1
+		return 0
 	
 def test_exclude_vep(filter, vcfline, csq_anno):
 	option_field=filter.split("[")[0]
@@ -272,7 +272,7 @@ def test_exclude_vep(filter, vcfline, csq_anno):
 		else:
 			return 0
 	else:
-		return 1
+		return 0
 	
 def find_vep_gene(genecolname, vcfline, csq_anno):
         csq_index=csq_anno.index(genecolname)
