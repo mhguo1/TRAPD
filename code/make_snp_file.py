@@ -180,7 +180,7 @@ def test_include_info(filter, vcfline):
 				else:
 					return 0
 			else:
-        			if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
+        			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
 					return 1
 	        		else:
         	        		return 0
@@ -207,7 +207,7 @@ def test_exclude_info(filter, vcfline):
 				else:
 					return 1
 			else:
-        			if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
+        			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
 					return 0
         			else:
                 			return 1
@@ -236,7 +236,7 @@ def test_include_vep(filter, vcfline, csq_anno):
 				else:
 					return 0
 			else:
-        			if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
+        			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
 					return 1
 	        		else:
     					return 0
@@ -265,7 +265,7 @@ def test_exclude_vep(filter, vcfline, csq_anno):
 				else:
 					return 1
 			else:
-        			if get_operator_fn(filter.split("[")[1].split("]")[0])(field_value, option_value):
+        			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
 					return 0
 	        		else:
         				return 1
