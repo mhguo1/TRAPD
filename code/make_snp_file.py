@@ -185,7 +185,7 @@ def test_include_info(filter, vcfline):
 	        		else:
         	        		return 0
 		else:
-			return 1
+			return 0
 	else:
 		return 1
 
@@ -212,7 +212,7 @@ def test_exclude_info(filter, vcfline):
         			else:
                 			return 1
 		else:
-			return 1
+			return 0
 	else:
 		return 1
 
@@ -241,7 +241,7 @@ def test_include_vep(filter, vcfline, csq_anno):
 	        		else:
     					return 0
 		else:
-			return 1
+			return 0
 	else:
 		return 1
 	
@@ -270,7 +270,7 @@ def test_exclude_vep(filter, vcfline, csq_anno):
 	        		else:
         				return 1
 		else:
-			return 1
+			return 0
 	else:
 		return 1
 	
