@@ -99,12 +99,13 @@ def makesnplist(snpfile):
 	return set(snplist)
 	snp_file.close()
 
-def num_convert(value, default):
+def num_convert(val_in, val_def):
 	#Checks if something is int or float; if not, returns default
-	try float(value) or int(value)
-		val_out=float(value)
+	try:
+		float(val_in) or int(val_in)
+		val_out=float(val_in)
 	except ValueError:
-		val_out=float(default)
+		val_out=float(val_def)
 	return val_out
 
 def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
