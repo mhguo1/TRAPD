@@ -160,10 +160,6 @@ for line_vcf1 in open(vcffile_temp.fn):
 				counts=findcarriers(line_vcf, options.gtfield, options.snpformat, sampleindices, options.maxAC, options.maxAF, options.minAN)
 				if counts[2]>0:
 					count_table[snpid]=[snpid, counts[0], counts[1], counts[2]]
-		
-	#Find indices of samples in the sample file
-	#elif line_vcf[0]=="#CHROM":
-	#	sampleindices=findsampleindex(line_vcf1, options.samplefilename)
 pybedtools.cleanup() 
 
 
