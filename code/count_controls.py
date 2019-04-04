@@ -73,9 +73,9 @@ if options.database=="generic":
         ac_found=0
 	an_found=0
         for line_vcf1 in vcffile:
-                if line_vcf1[0]=="#" and ("ID=AC," in line_vcf1):
+                if line_vcf1[0]=="#" and ("id=ac," in line_vcf1.lower()):
                         ac_found=1
-		elif line_vcf1[0]=="#" and ("ID=AN," in line_vcf1):
+		elif line_vcf1[0]=="#" and ("id=an," in line_vcf1.lower()):
                         an_found=1
 		elif line_vcf1[0:1]=="#C":
                         break
@@ -100,18 +100,19 @@ def makesnplist(snpfile):
 	snp_file.close()
 
 def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
-	ac_out=float((";"+vcfline).split((";AC="))[1].split(";")[0].split(",")[0])
-	an=float((";"+vcfline).split((";AN="))[1].split(";")[0].split(",")[0])
+	vcfline=vcfline.lower()
+	ac_out=float((";"+vcfline).split((";ac="))[1].split(";")[0].split(",")[0])
+	an=float((";"+vcfline).split((";an="))[1].split(";")[0].split(",")[0])
 	if ac_out==0:
 		af_out=0
 	else:
 		if options.database=="generic":
-			if ";AF=" in vcfline:
-				af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0].split(",")[0])
+			if ";af=" in vcfline:
+				af_out=float((";"+vcfline).split((";af="))[1].split(";")[0].split(",")[0])
 			else:
 				af_out=float(ac_out)/float(an)
 		else:	
-			af_out=float((";"+vcfline).split((";AF="))[1].split(";")[0].split(",")[0])
+			af_out=float((";"+vcfline).split((";af="))[1].split(";")[0].split(",")[0])
 			
 	if popmax_af<1:
 		af_popmax_out=get_popmax(vcfline)
@@ -126,24 +127,33 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 	else:
 		if options.database=="gnomad":
 			if "ALL" in pops:
-				hom_out=(";"+vcfline).split((";Hom="))[1].split(";")[0].split(",")[0]
+				if ";nhomalt=" in (";"+vcfline):
+					hom_out=(";"+vcfline).split((";nhomalt="))[1].split(";")[0].split(",")[0]
+				elif ";hom=" in (";"+vcfline):
+					hom_out=(";"+vcfline).split((";hom="))[1].split(";")[0].split(",")[0]
+				else:
+					hom_out=0
 			elif "ALL" not in pops:
 				ac_out=0
                			hom_out=0
 				for p in range(0, len(pops), 1):
-					temp_pop=pops[p]
-					ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0].split(",")[0])
-					hom_out=int(hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0].split(",")[0])
+					temp_pop=pops[p].lower()
+					ac_out=int(ac_out)+int((";"+vcfline).split((";ac_"+temp_pop+"="))[1].split(";")[0].split(",")[0])
+					if ";nhomalt=" in (";"+vcfline):
+						hom_out=int(hom_out)+(";"+vcfline).split((";nhomalt_"+temp_pop+"="))[1].split(";")[0].split(",")[0]
+					elif ";hom=" in (";"+vcfline):
+						hom_out=int(hom_out)+(";"+vcfline).split((";hom_"+temp_pop+"="))[1].split(";")[0].split(",")[0]
+			
 		elif options.database=="exac":
 			if "ALL" in pops:
-				hom_out=(";"+vcfline).split((";AC_Hom="))[1].split(";")[0].split(",")[0]
+				hom_out=(";"+vcfline).split((";ac_hom="))[1].split(";")[0].split(",")[0]
 			elif "ALL" not in pops:
 				ac_out=0
                			hom_out=0
 				for p in range(0, len(pops), 1):
-					temp_pop=pops[p]
-					ac_out=int(ac_out)+int((";"+vcfline).split((";AC_"+temp_pop+"="))[1].split(";")[0].split(",")[0])
-					hom_out=int(hom_out)+int((";"+vcfline).split((";Hom_"+temp_pop+"="))[1].split(";")[0].split(",")[0])
+					temp_pop=pops[p].lower()
+					ac_out=int(ac_out)+int((";"+vcfline).split((";ac_"+temp_pop+"="))[1].split(";")[0].split(",")[0])
+					hom_out=int(hom_out)+int((";"+vcfline).split((";hom_"+temp_pop+"="))[1].split(";")[0].split(",")[0])
 
 		elif options.database=="generic":
 			if options.homcol is not None:
@@ -154,18 +164,19 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 
 
 def get_popmax(vcfline):
+	vcfline=vcfline.lower()
 	if options.database in ["gnomad", "generic"]:
-		if ";AF_POPMAX=" in (";"+vcfline):
-			af_popmax_out=(";"+vcfline).split((";AF_POPMAX="))[1].split(";")[0].split(",")[0]
+		if ";af_popmax=" in (";"+vcfline):
+			af_popmax_out=(";"+vcfline).split((";af_popmax="))[1].split(";")[0].split(",")[0]
         		if af_popmax_out==".":
               	 		af_popmax_out=0
 		else:
 			af_popmax_out=1
 	if options.database=="exac":
-		if (";AC_POPMAX=" in (";"+vcfline)) and (";AN_POPMAX" in (";"+vcfline)):
-			ac_popmax=(";"+vcfline).split((";AC_POPMAX="))[1].split(";")[0].split(",")[0]
-			an_popmax=(";"+vcfline).split((";AN_POPMAX="))[1].split(";")[0].split(",")[0]
-			if str(ac_popmax)=="NA" or str(an_popmax)=="NA":
+		if (";ac_popmax=" in (";"+vcfline)) and (";an_popmax" in (";"+vcfline)):
+			ac_popmax=(";"+vcfline).split((";ac_popmax="))[1].split(";")[0].split(",")[0]
+			an_popmax=(";"+vcfline).split((";an_popmax="))[1].split(";")[0].split(",")[0]
+			if str(ac_popmax)=="na" or str(an_popmax)=="na":
 				af_popmax_out=0
 			else:
 				af_popmax_out=float(ac_popmax)/float(an_popmax)
