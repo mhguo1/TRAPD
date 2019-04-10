@@ -112,7 +112,7 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 	vcfline=vcfline.lower()
 	ac_out=0
 	an_out=100000000000
-	af_popmax_out=1
+	af_popmax_out=0
 	if ";ac=" in (";"+vcfline) and ";an=" in (";"+vcfline):
 		ac_out=num_convert((";"+vcfline).split((";ac="))[1].split(";")[0].split(",")[0],0)
 		an=num_convert((";"+vcfline).split((";an="))[1].split(";")[0].split(",")[0], 100000000000)
@@ -120,12 +120,12 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 		af_out=0
 	else:
 		if ";af=" in vcfline:
-			af_out=num_convert((";"+vcfline).split((";af="))[1].split(";")[0].split(",")[0],1)
+			af_out=num_convert((";"+vcfline).split((";af="))[1].split(";")[0].split(",")[0],0)
 		else:
 			af_out=float(ac_out)/float(an)
 	if popmax_af<1:
 		af_popmax_out=get_popmax(vcfline)
-	af_popmax_out=num_convert(af_popmax_out, 1)
+	af_popmax_out=num_convert(af_popmax_out, 0)
 	       
 	if (ac_out>float(max_ac)) or (af_out>float(max_af)) or (an<float(min_an)) or (af_popmax_out>float(popmax_af)):
 		ac_out=0
@@ -180,18 +180,19 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 
 def get_popmax(vcfline):
 	vcfline=vcfline.lower()
+	af_popmax_out=0
 	if options.database in ["gnomad", "generic"]:
 		if ";af_popmax=" in (";"+vcfline):
-			af_popmax_out=num_convert((";"+vcfline).split((";af_popmax="))[1].split(";")[0].split(",")[0],1)
-		else:
-			af_popmax_out=1
+			af_popmax_out=num_convert((";"+vcfline).split((";af_popmax="))[1].split(";")[0].split(",")[0],0)
+
 	if options.database=="exac":
 		if (";ac_popmax=" in (";"+vcfline)) and (";an_popmax" in (";"+vcfline)):
 			ac_popmax=num_convert((";"+vcfline).split((";ac_popmax="))[1].split(";")[0].split(",")[0],0)
 			an_popmax=num_convert((";"+vcfline).split((";an_popmax="))[1].split(";")[0].split(",")[0],100000000000)
 			af_popmax_out=float(ac_popmax)/float(an_popmax)
-		else:
-			af_popmax_out=1
+
+	return af_popmax_out		
+	
 
 def sumcount(genesnps, snptable):
 	ac_sum=0
