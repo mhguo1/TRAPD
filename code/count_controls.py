@@ -123,7 +123,7 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 			af_out=num_convert((";"+vcfline).split((";af="))[1].split(";")[0].split(",")[0],0)
 		else:
 			af_out=float(ac_out)/float(an)
-	if popmax_af<1:
+	if float(popmax_af)<1:
 		af_popmax_out=get_popmax(vcfline)
 	af_popmax_out=num_convert(af_popmax_out, 0)
 	       
@@ -190,7 +190,6 @@ def get_popmax(vcfline):
 			ac_popmax=num_convert((";"+vcfline).split((";ac_popmax="))[1].split(";")[0].split(",")[0],0)
 			an_popmax=num_convert((";"+vcfline).split((";an_popmax="))[1].split(";")[0].split(",")[0],100000000000)
 			af_popmax_out=float(ac_popmax)/float(an_popmax)
-
 	return af_popmax_out		
 	
 
