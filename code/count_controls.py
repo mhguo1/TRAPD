@@ -154,7 +154,7 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 
 		elif options.database=="exac":
 			if "ALL" in pops:
-				if ";hom=" in (";"+vcfline):
+				if ";ac_hom=" in (";"+vcfline):
 					hom_out=(";"+vcfline).split((";ac_hom="))[1].split(";")[0].split(",")[0]
 				else:
 					hom_out=0
