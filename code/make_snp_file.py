@@ -162,6 +162,17 @@ def is_number(s):
     except ValueError:
         return False
 
+#Extract canonical vep annotation
+def canonical_vep(vcfline):
+        annots=(";"+vcfline).split(";CSQ=")[1].split(";")[0].split(",")
+        canonical_index=csq_anno.index("CANONICAL")
+        out=""
+        for i in range(0, len(annots), 1):
+                if len(csq_anno)==len(annots[i].split("|")):
+                        if str(annots[i].split("|")[canonical_index])=="YES":
+                                out=annots[i]
+        return out
+
 def test_include_info(filter, vcfline):
         option_field=filter.split("[")[0]
         option_value=filter.split("]")[1]
@@ -217,62 +228,66 @@ def test_exclude_info(filter, vcfline):
 		return 0
 
 def test_include_vep(filter, vcfline, csq_anno):
-	option_field=filter.split("[")[0]
-	csq_index=csq_anno.index(option_field)
+        option_field=filter.split("[")[0]
+        csq_index=csq_anno.index(option_field)
         option_value=filter.split("]")[1]
-	vcfline=vcfline.replace("vep=", "CSQ=")
-	if "CSQ=" in vcfline and (csq_index-1)<=len((";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")):
-		field_value=(";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")[csq_index]
-		consist_out=consistent(option_value, field_value)
-		if consist_out[2]==1:
-			if filter.split("[")[1].split("]")[0]=="in":
-				listvalues=option_value.lstrip("(").rstrip(")").split(',')
-				counter=0
-				for i in range(0, len(listvalues), 1):
-					if operator.eq(field_value, listvalues[i]):
-						counter+=1
-				if counter>0:
-					return 1
-				else:
-					return 0
-			else:
-        			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
-					return 1
-	        		else:
-    					return 0
-		else:
-			return 0
-	else:
-		return 0
+        vcfline=vcfline.replace("vep=", "CSQ=")
+        if "CSQ=" in vcfline:
+                vep_canonical_annot=canonical_vep(vcfline)
+        if "CSQ=" in vcfline and vep_canonical_annot!="":
+                field_value=vep_canonical_annot.split("|")[csq_index]
+                consist_out=consistent(option_value, field_value)
+                if consist_out[2]==1:
+                        if filter.split("[")[1].split("]")[0]=="in":
+                                listvalues=option_value.lstrip("(").rstrip(")").split(',')
+                                counter=0
+                                for i in range(0, len(listvalues), 1):
+                                        if operator.eq(field_value, listvalues[i]):
+                                                counter+=1
+                                if counter>0:
+                                        return 1
+                                else:
+                                        return 0
+                        else:
+                                if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
+                                        return 1
+                                else:
+                                        return 0
+                else:
+                        return 0
+        else:
+                return 0
 	
 def test_exclude_vep(filter, vcfline, csq_anno):
-	option_field=filter.split("[")[0]
-	csq_index=csq_anno.index(option_field)
+        option_field=filter.split("[")[0]
+        csq_index=csq_anno.index(option_field)
         option_value=filter.split("]")[1]
-	vcfline=vcfline.replace("vep=", "CSQ=")
-	if "CSQ=" in vcfline and (csq_index-1)<=len((";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")):
-		field_value=(";"+vcfline).split((";CSQ="))[1].split(";")[0].split("|")[csq_index]
-		consist_out=consistent(option_value, field_value)
-		if consist_out[2]==1:
-			if filter.split("[")[1].split("]")[0]=="in":
-				listvalues=option_value.lstrip("(").rstrip(")").split(',')
-				counter=0
-				for i in range(0, len(listvalues), 1):
-					if operator.eq(field_value, listvalues[i]):
-						counter+=1
-				if counter>0:
-					return 0
-				else:
-					return 1
-			else:
-        			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
-					return 0
-	        		else:
-        				return 1
-		else:
-			return 0
-	else:
-		return 0
+        vcfline=vcfline.replace("vep=", "CSQ=")
+        if "CSQ=" in vcfline:
+                vep_canonical_annot=canonical_vep(vcfline)
+        if "CSQ=" in vcfline and vep_canonical_annot!="":
+                field_value=vep_canonical_annot.split("|")[csq_index]
+                consist_out=consistent(option_value, field_value)
+                if consist_out[2]==1:
+                        if filter.split("[")[1].split("]")[0]=="in":
+                                listvalues=option_value.lstrip("(").rstrip(")").split(',')
+                                counter=0
+                                for i in range(0, len(listvalues), 1):
+                                        if operator.eq(field_value, listvalues[i]):
+                                                counter+=1
+                                if counter>0:
+                                        return 0
+                                else:
+                                        return 1
+                        else:
+                                if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
+                                        return 0
+                                else:
+                                        return 1
+                else:
+                        return 0
+        else:
+                return 0
 	
 def find_vep_gene(genecolname, vcfline, csq_anno):
         csq_index=csq_anno.index(genecolname)
