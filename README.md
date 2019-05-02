@@ -1,7 +1,7 @@
 # TRAPD
 
 
-Finding novel Mendelian disease genes can often be challenging. While some disorders are amenable gene discovery to family-based analyses (e.g., linkage or segregation), others may be very challenging for a number of reasons. One approach to identify genes associated with disease is to use burden testing, where the aggregate burden of rare protein-altering variants in each gene is tested against a set of suitable controls. While one may use a set of control-sequencing data, this is often too expensive and unavailable. Here, we provide a simple-to-use program called TRAPD (Testing Rare vAriants using Public Data) that allows for burden testing against publicly-available summary level data (e.g., ExAC or gnomAD).
+Finding genes associated with Mendelian diseases can often be challenging. While some disorders are amenable gene discovery to family-based analyses (e.g., linkage or segregation), others may be very challenging for a number of reasons. One approach to identify genes associated with disease is to use burden testing, where the aggregate burden of rare protein-altering variants in each gene is tested against a set of suitable controls. While one may use a set of control-sequencing data, this is often too expensive and unavailable. Here, we provide a simple-to-use program called TRAPD (Testing Rare vAriants using Public Data) that allows for burden testing against publicly-available summary level data (e.g., ExAC or gnomAD).
 
 Requirements:
 TRAPD is written in Python and R. For Python, it is recommended to use Python version 2.7. For R, any version 2.+ should be okay.
