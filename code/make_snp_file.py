@@ -301,6 +301,8 @@ def find_vep_gene(genecolname, vcfline, csq_anno):
 def find_info_gene(genecolname, vcfline):
 	if genecolname in vcfline:		
         	genename=(";"+vcfline).split(";"+genecolname+"=")[1].split(";")[0]
+	else:
+		genename=""
         return genename
 	
 #Function to match operator strings
@@ -383,16 +385,17 @@ for line_vcf1 in open(vcffile_temp.fn):
 				gene=find_vep_gene(options.genecolname, line_vcf[7], csq_anno)
 			else:
 				gene=find_info_gene(options.genecolname, line_vcf[7])
-				
-			if gene not in options.genenull.split(","):
-				if options.snpformat=="VCFID":
-					snpid=str(line_vcf[2])
-				else: 
-					snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
-			if gene not in snptable:
-				snptable[gene]=[gene, [snpid]]
-			else:
-				snptable[gene][1].append(snpid)
+			
+			if len(gene)>0:
+				if gene not in options.genenull.split(","):
+					if options.snpformat=="VCFID":
+						snpid=str(line_vcf[2])
+					else: 
+						snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
+				if gene not in snptable:
+					snptable[gene]=[gene, [snpid]]
+				else:
+					snptable[gene][1].append(snpid)
 pybedtools.cleanup() 			
 
 #Write Output
