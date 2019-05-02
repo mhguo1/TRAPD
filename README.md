@@ -1,7 +1,9 @@
 # TRAPD
 
 
-Finding genes associated with Mendelian diseases can often be challenging. While some disorders are amenable gene discovery to family-based analyses (e.g., linkage or segregation), others may be very challenging for a number of reasons. One approach to identify genes associated with disease is to use burden testing, where the aggregate burden of rare protein-altering variants in each gene is tested against a set of suitable controls. While one may use a set of control-sequencing data, this is often too expensive and unavailable. Here, we provide a simple-to-use program called TRAPD (Testing Rare vAriants using Public Data) that allows for burden testing against publicly-available summary level data (e.g., ExAC or gnomAD).
+Finding genes associated with Mendelian disorders can often be challenging. While some disorders are amenable gene discovery using family-based analyses (e.g., linkage or segregation), other disorders may be very challenging for a number of reasons (see Guo et al., AJHG. 2016. PMID: 27545677). One approach to identify genes associated with Mendelian disorders is to use burden testing, where the aggregate burden of rare protein-altering variants in each gene is tested against a set of suitable controls. While one may sequence a set of control samples or have control sample sequencing readily available, this is often too expensive and unavailable. Here, we provide a simple-to-use program called TRAPD (Testing Rare vAriants using Public Data) that allows for burden testing against publicly-available summary level data (e.g., ExAC or gnomAD).
+
+We have had a number of users ask us about how to filter their data. We refer users to our paper. Filtering data for parameters such as variant quality are dependent on your data and likely will need to be calibrated. Our paper outlines how we did this for our samples and outlines some general approaches. However, there is no one-size-fits-all approach.
 
 Requirements:
 TRAPD is written in Python and R. For Python, it is recommended to use Python version 2.7. For R, any version 2.+ should be okay.
@@ -15,7 +17,7 @@ BEDTools (http://bedtools.readthedocs.io/en/latest/) must also be loaded in the 
 
 
 **0) Pre-processing:**
-There are several pre-processing steps that are necessary before running TRAPD: 1) Separating multi-allelic variants, 2) left-aligning indels, 3) annotating your vcf. Below, we provide several sample command lines for performing these steps:
+There are several pre-processing steps that are necessary before running TRAPD: 1) Separating multi-allelic variants, 2) left-aligning indels, 3) annotating your vcf, 4) creating a read depth filter. Below, we provide several sample command lines for performing these steps:
 
 	0.1-0.2) Separating multi-allelics and left-aligning indels:
 	There are several ways to do this. Please see https://genome.sph.umich.edu/wiki/Variant_Normalization for additional details on this issue. We use Bcftools to accomplish these two steps:
