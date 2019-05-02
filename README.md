@@ -1,7 +1,7 @@
 # TRAPD
 
 
-Finding novel Mendelian disease genes can often be challenging. While some disorders are amenable gene discovery to family-based analyses (e.g., linkage or segregation), others may be very challenging for a number of reasons. One approach go identify genes associated with disease is to use burden testing, where the aggregate burden of rare protein-altering variants in each gene is tested against a set of controls. While one may use a set of available control sequencing data, this is generally too expensive and unavailable in most circumstances. Here, we provide a simple-to-use program called TRAPD (Testing Rare vAriants using Public Data) that allows for burden testing against publicly-available summary level data (e.g., ExAC or gnomAD).
+Finding novel Mendelian disease genes can often be challenging. While some disorders are amenable gene discovery to family-based analyses (e.g., linkage or segregation), others may be very challenging for a number of reasons. One approach to identify genes associated with disease is to use burden testing, where the aggregate burden of rare protein-altering variants in each gene is tested against a set of suitable controls. While one may use a set of control-sequencing data, this is often too expensive and unavailable. Here, we provide a simple-to-use program called TRAPD (Testing Rare vAriants using Public Data) that allows for burden testing against publicly-available summary level data (e.g., ExAC or gnomAD).
 
 Requirements:
 TRAPD is written in Python and R. For Python, it is recommended to use Python version 2.7. For R, any version 2.+ should be okay.
@@ -18,9 +18,9 @@ BEDTools (http://bedtools.readthedocs.io/en/latest/) must also be loaded in the 
 There are several pre-processing steps that are necessary before running TRAPD: 1) Separating multi-allelic variants, 2) left-aligning indels, 3) annotating your vcf. Below, we provide several sample command lines for performing these steps:
 
 	0.1-0.2) Separating multi-allelics and left-aligning indels:
-	There are several ways to do this. Please see https://genome.sph.umich.edu/wiki/Variant_Normalization for additional details on this problem. We use Bcftools to accomplish these two steps:
+	There are several ways to do this. Please see https://genome.sph.umich.edu/wiki/Variant_Normalization for additional details on this issue. We use Bcftools to accomplish these two steps:
 	(https://samtools.github.io/bcftools/bcftools.html):
-	bcftools norm -m -any in.vcf.gz | bcftools norm -f Homo_sapiens_assembly19.fasta | bgzip > out.vcf.gz
+	bcftools norm -m -any -f Homo_sapiens_assembly19.fasta in.vcf.gz | bgzip > out.vcf.gz
 	
 	0.3) Annotation:
 	For variant annotation, we have achieved our best results using VEP (https://www.ensembl.org/info/docs/tools/vep/script/index.html). Several additional annotators include SnpEff (http://snpeff.sourceforge.net/) and ANNOVAR (http://annovar.openbioinformatics.org/en/latest/).
@@ -32,7 +32,7 @@ There are several pre-processing steps that are necessary before running TRAPD: 
 Please note that if you do not properly separate out multi-allelic varints, TRAPD will automatically remove that variant in later steps.
 
 **1a) Creating a SNP file**
-A SNP file maps qualifying variants to each gene. Qualifying variants are variants that you think may be pathogenic, usually based on minor allele frequency and annotations of predicted effect o the variant (e.g., rare protein-altering variants). You can create a separate SNP file for your cases and controls, or you can make the same SNP file. The SNP file for TRAPD has two columns: 1) Column 1 is your gene name, and 2) Column 2 is a comma separated list of variants assigned to that gene. A variant can be assigned to multiple genes. The header for this file is: "#GENE SNPS".
+A SNP file maps qualifying variants to genes. Qualifying variants are variants that you think may be pathogenic, usually based on minor allele frequency (e.g., less than 0.1% frequency in a reference population) and annotations of predicted effect of the variant (e.g., rare protein-altering variants). You can create a separate SNP file for your cases and controls, or you can make the same SNP file. The SNP file format for TRAPD has two columns: 1) Column 1 is your gene name, and 2) Column 2 is a comma separated list of variants assigned to that gene. A variant can be assigned to multiple genes. The header for this file is: "#GENE SNPS".
 
 To create the SNP file, you must have an annotated vcf from which you define your gene names. The vcf does not need to have any genotypes (i.e., can be a sites-only vcf). 
 
@@ -64,19 +64,19 @@ Some examples:
 --excludeinfo "AF[>]0.05" #Filters out variants with allele frequency (AF) greater than 0.05
 --includeinfo "SNPEFF_EFFECT[=]missense" #Filters in variants with SNPEFF_EFFECT annotated as missense.
 
-Variants that are kept will meet ALL criteria supplied!
+Variants that are kept will need to meet ALL criteria supplied!
 
 5) VEP INFO field filter options (--includevep, --excludevep). These are criteria based on the VEP INFO field of your vcf to include or exclude variants. They are structured the same as --includeinfo and --excludeinfo, and as many as you want may be used. If these options are used, --vep must be supplied. Some examples:
 --includeinfo "BIOTYPE[=]protein_coding" #Include variants where the VEP CSQ consequence is protein_coding
 --excludeinfo "consequence[=]synonymous" #Exclude variants where the VEP CSQ consequence is synonymous
 
-6) --snpformat: Format for SNPs. Default is "VCFID". Your SNPs may be defined in any one of two ways.  If you supply the option "VCFID", then the program will use the VCF variant name in column 3 of your vcf (often rsIDs). Alternatively, you may supply "CHRPOSREFALT", in which case variants will be formatted as chr:pos:ref:alt (e.g., 1:1000:A:T).
+6) --snpformat: Format for SNPs. Default is "CHRPOSREFALT". Your SNPs may be defined in any one of two ways.  If you supply the option "VCFID", then the program will use the VCF variant name in column 3 of your vcf (often rsIDs). Alternatively, you may supply "CHRPOSREFALT", in which case variants will be formatted as chr:pos:ref:alt (e.g., 1:1000:A:T). We highly recommend that you use CHRPOSREFALT as this reduces ambiguity.
 
 7) --bedfile: Path to a bed file for regions of interest. Only regions that are within the bed file-defined regions will be kept. If this option is not supplied, then the entire VCF will be used. Caution that if your chromosome names start in "chr" (e.g., "chr1"), then your bed file should be formatted similarly.
 
 8) --pass: Keep only PASS variants based on the "FILTER" field of your vcf
 
-9) --genenull: Values for which a gene is to be considered null. Default is "NA" or ".". Genes names having any of these values will be excluded from teh output.
+9) --genenull: Values for which a gene is to be considered null. Default is "NA" or ".". Genes names having any of these values will be excluded from teh output. In addition, any variants without a gene name annotation will be excluded.
 
 10) --vep: Option that should be supplied if you used VEP to annotate your vcf.
 
@@ -111,9 +111,9 @@ Required Options
 3) -o, --outfile: This is a path to your desired outfile name: e.g., /Users/smith/dat/out.txt. The default is "case_counts.txt"
 
 Additional Options:
-4) --snpformat: Format for SNPs. Default is "VCFID". Your SNPs may be defined in any one of two ways.  If you supply the option "VCFID", then the program will use the VCF variant name in column 3 of your vcf (often rsIDs). Alternatively, you may supply "CHRPOSREFALT", in which case variants will be formatted as chr:pos:ref:alt (e.g., 1:1000:A:T).
+4) --snpformat: Format for SNPs. Default is "CHRPOSREFALT". Your SNPs may be defined in any one of two ways.  If you supply the option "VCFID", then the program will use the VCF variant name in column 3 of your vcf (often rsIDs). Alternatively, you may supply "CHRPOSREFALT", in which case variants will be formatted as chr:pos:ref:alt (e.g., 1:1000:A:T).
 
-5) --samplefile: Optional file containing list of samples to use. The file should contain one sample per row. Only samples in this list and in the VCF will be used. 
+5) --samplefile: Optional file containing list of samples to use. The file should contain one sample per row. Only samples present in this list and in the VCF will be used. 
 
 6) --pass: Keep only PASS variants based on the "FILTER" field of your vcf
 
@@ -148,7 +148,7 @@ Required Options
 3) -o, --outfile: This is a path to your desired outfile name: e.g., /Users/smith/dat/out.txt. The default is "case_counts.txt"
 
 Additional Options:
-4) --snpformat: Format for SNPs. Default is "VCFID". Your SNPs may be defined in any one of two ways.  If you supply the option "VCFID", then the program will use the VCF variant name in column 3 of your vcf (often rsIDs). Alternatively, you may supply "CHRPOSREFALT", in which case variants will be formatted as chr:pos:ref:alt (e.g., 1:1000:A:T).
+4) --snpformat: Format for SNPs. Default is "CHRPOSREFALT". Your SNPs may be defined in any one of two ways.  If you supply the option "VCFID", then the program will use the VCF variant name in column 3 of your vcf (often rsIDs). Alternatively, you may supply "CHRPOSREFALT", in which case variants will be formatted as chr:pos:ref:alt (e.g., 1:1000:A:T).
 
 5) --pop: Comma separated list of continental populations to use. For ExAC, these include AFR, AMR, EAS, FIN, NFE, SAS, OTH.  For gnomad, these include AFR, AMR, ASJ, EAS, FIN, NFE, SAS, OTH. If ALL is included, then all populations are used. The default is "ALL"
 
@@ -198,8 +198,6 @@ Output: A tab delimited file with 10 columns:
 - CONTROL_TOTAL_AC: Total AC for a given gene.
 - P_DOM: p-value under the dominant model.
 - P_REC: p-value under the recessive model.
-
-
 
 
 
