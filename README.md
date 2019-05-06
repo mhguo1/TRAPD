@@ -103,7 +103,7 @@ Required Options
 This script will tabulate the number of cases carrying qualifying variants in each gene as defined by a SNP file. 
 
 The command takes in a vcf file containing case sample genotypes and a SNP file listing the qualifying variants for each gene. The general command is:
-python count_cases.py -v test.vcf.gz -s snpfile.txt -o controlcounts.txt [--snpformat --samplefile --pass --maxAC --maxAF --minAN --GTfield]. 
+python count_cases.py -v test.vcf.gz -s snpfile.txt -o casecounts.txt [--snpformat --samplefile --pass --maxAC --maxAF --minAN --GTfield]. 
 
 Required Options
 1) -v, --vcffile: This is the path to your VCF file containing case genotypes: e.g., /Users/smith/dat/test.vcf.gz. Your vcf must be gzipped or bgzipped.
@@ -180,7 +180,8 @@ Output: The output file will contain four columns:
 **3) Run burden testing**
 This script will run the actual burden testing. It performs a one-sided Fisher's exact test to determine if there is a greater burden of qualifying variants in cases as compared to controls for each gene. It will perform this burden testing under a dominant and a recessive model.
 
-It requires R; the script was tested using R v3.1, but any version of R should work.
+It requires R; the script was tested using R v3.1, but any version of R should work. The script should be run as:
+Rscript burden.R --casefile casecounts.txt --casesize 100 --controlfile controlcounts.txt --controlsize 60000 --output burden.out.txt
 
 The script has 5 required options:
 1) --casefile: Path to the counts file for the cases, as generated in Step 2A
