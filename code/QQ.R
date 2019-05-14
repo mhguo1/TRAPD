@@ -3,7 +3,7 @@ library("argparse")
 suppressPackageStartupMessages(library("argparse"))
 
 parser <- ArgumentParser()
-parser$add_argument("--countsfile", action="store")
+parser$add_argument("--pvalfile", action="store")
 parser$add_argument("--plotfile", action="store")
 parser$add_argument("--maxp", default=100, action="store", type="integer")
 parser$add_argument("--recessive", default=FALSE, action="store_true")
