@@ -202,6 +202,11 @@ Output: A tab delimited file with 10 columns:
 - P_DOM: p-value under the dominant model.
 - P_REC: p-value under the recessive model.
 
+**Generate QQ Plot**
+The last step is the generate the QQ plot and calculate the lambda_delta95 as described in our paper
+
+It requires R; the script was tested using R v3.1, but any version of R should work. The script should be run as:
+Rscript QQ.R -- burden.out.txt --plotfile out.png --
 
 
 **Creating read depth filter (Step 0.4)**
