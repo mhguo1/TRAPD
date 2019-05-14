@@ -206,7 +206,17 @@ Output: A tab delimited file with 10 columns:
 The last step is the generate the QQ plot and calculate the lambda_delta95 as described in our paper
 
 It requires R; the script was tested using R v3.1, but any version of R should work. The script should be run as:
-Rscript QQ.R -- burden.out.txt --plotfile out.png --
+Rscript QQ.R --pvalfile burden.out.txt --plotfile out.png [--maxp --recessive --removenull]
+
+Required Options
+--pvalfile: This is the output from burden testing from Step 3 
+--plotfile: This is the file name for the output. Must end in ".png"
+
+Additional Options
+--maxp: truncates plot at a -log10(p-value) of this value. Default is 100.
+--recessive: Instructs script to use recessive p-values (P_REC) from above rather than P_DOM. Default is FALSE
+--removenull: Instructs plot to remove any values where the p-value is 1. Can be used to generate prettier plots when a lot of genes have p-values of 1 (commonly seen if case sample size is small). Default is FALSE.
+
 
 
 **Creating read depth filter (Step 0.4)**
