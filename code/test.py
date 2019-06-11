@@ -226,69 +226,61 @@ def test_exclude_info(filter, vcfline):
 			return 0
 	else:
 		return 0
+def test_include_vep_GM(filter, annot, csq_anno):
+        option_field=filter.split("[")[0]
+        csq_index=csq_anno.index(option_field)
+        option_value=filter.split("]")[1]
+        field_value=annot.split("|")[csq_index]
+        consist_out=consistent(option_value, field_value)
+        if consist_out[2]==1:
+        	if filter.split("[")[1].split("]")[0]=="in":
+            	listvalues=option_value.lstrip("(").rstrip(")").split(',')
+                counter=0
+                for i in range(0, len(listvalues), 1):
+                	if operator.eq(field_value, listvalues[i]):
+                    		counter+=1
+                    		if counter>0:
+                			return 1
+              		else:
+                        	return 0
+                    else:
+                    	if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
+                        	return 1
+                        else:
+                        	return 0
+        else:
+                        return 0
+	
+def test_exclude_vep_GM(filter, annot, csq_anno):
+        option_field=filter.split("[")[0]
+        csq_index=csq_anno.index(option_field)
+        option_value=filter.split("]")[1]
+        field_value=annot.split("|")[csq_index]
+        consist_out=consistent(option_value, field_value)
+        if consist_out[2]==1:
+        	if filter.split("[")[1].split("]")[0]=="in":
+            	listvalues=option_value.lstrip("(").rstrip(")").split(',')
+                counter=0
+                for i in range(0, len(listvalues), 1):
+                	if operator.eq(field_value, listvalues[i]):
+                		counter+=1
+                        	if counter>0:
+                        		return 0
+                        else:
+                        	return 1
+                    else:
+                    	if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
+				return 0
+                        else:
+				return 1
+        else:
+                        return 0
+		
+def find_vep_gene_GM(genecolname, annot, csq_anno):
+    csq_index=csq_anno.index(genecolname)
+    genename=annot.split("|")[csq_index]
+    return genename
 
-def test_include_vep(filter, vcfline, csq_anno):
-        option_field=filter.split("[")[0]
-        csq_index=csq_anno.index(option_field)
-        option_value=filter.split("]")[1]
-        vcfline=vcfline.replace("vep=", "CSQ=")
-        if "CSQ=" in vcfline:
-                vep_canonical_annot=canonical_vep(vcfline)
-        if "CSQ=" in vcfline and vep_canonical_annot!="":
-                field_value=vep_canonical_annot.split("|")[csq_index]
-                consist_out=consistent(option_value, field_value)
-                if consist_out[2]==1:
-                        if filter.split("[")[1].split("]")[0]=="in":
-                                listvalues=option_value.lstrip("(").rstrip(")").split(',')
-                                counter=0
-                                for i in range(0, len(listvalues), 1):
-                                        if operator.eq(field_value, listvalues[i]):
-                                                counter+=1
-                                if counter>0:
-                                        return 1
-                                else:
-                                        return 0
-                        else:
-                                if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
-                                        return 1
-                                else:
-                                        return 0
-                else:
-                        return 0
-        else:
-                return 0
-	
-def test_exclude_vep(filter, vcfline, csq_anno):
-        option_field=filter.split("[")[0]
-        csq_index=csq_anno.index(option_field)
-        option_value=filter.split("]")[1]
-        vcfline=vcfline.replace("vep=", "CSQ=")
-        if "CSQ=" in vcfline:
-                vep_canonical_annot=canonical_vep(vcfline)
-        if "CSQ=" in vcfline and vep_canonical_annot!="":
-                field_value=vep_canonical_annot.split("|")[csq_index]
-                consist_out=consistent(option_value, field_value)
-                if consist_out[2]==1:
-                        if filter.split("[")[1].split("]")[0]=="in":
-                                listvalues=option_value.lstrip("(").rstrip(")").split(',')
-                                counter=0
-                                for i in range(0, len(listvalues), 1):
-                                        if operator.eq(field_value, listvalues[i]):
-                                                counter+=1
-                                if counter>0:
-                                        return 0
-                                else:
-                                        return 1
-                        else:
-                                if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
-                                        return 0
-                                else:
-                                        return 1
-                else:
-                        return 0
-        else:
-                return 0
-	
 def find_vep_gene(genecolname, vcfline, csq_anno):
         csq_index=csq_anno.index(genecolname)
 	vcfline=vcfline.replace("vep=", "CSQ=")
@@ -365,37 +357,50 @@ for line_vcf1 in open(vcffile_temp.fn):
 				iter=iter+1
   
    #Go through INFO/VEP field filters
-		if keep==1 and options.includevep is not None:
-			iter=0
-			while keep==1 and iter<len(options.includevep):
-				filter=options.includevep[iter]
-				keep=test_include_vep(filter, line_vcf[7], csq_anno)
-				iter=iter+1
-        
-		if keep==1 and options.excludevep is not None:
-			iter=0
-			while keep==1 and iter<len(options.excludevep):
-				filter=options.excludevep[iter]
-				keep=test_exclude_vep(filter, line_vcf[7], csq_anno)
-				iter=iter+1
-        
-#If variant meets all filters, then extract gene name
+		if keep==1 and options.vep:
+           		vcfline=line_vcf[7].replace("vep=", "CSQ=")
+            		if "CSQ=" in vcfline:
+				annots=(";"+vcfline).split(";CSQ=")[1].split(";")[0].split(",")
+				keep_a = [1] * len(annots)
+				if options.includevep is not None:
+                  			for i in range(0, len(annots), 1):
+                      				if len(csq_anno)==len(annots[i].split("|")):
+							iter=0
+							while keep_a[i]==1 and iter<len(options.includevep):
+								filter=options.includevep[iter]
+								keep_a[i]=test_include_vep_GM(filter, annots[i], csq_anno)
+								iter=iter+1
+				if options.excludevep is not None:
+					for i in range(0, len(annots), 1):
+ 						if len(csq_anno)==len(annots[i].split("|")):
+							iter=0
+							while keep_a[i]==1 and iter<len(options.includevep):
+								filter=options.excludevep[iter]
+								keep_a[i]=test_exclude_vep_GM(filter, annots[i], csq_anno)
+								iter=iter+1
+				if not 1 in keep_a:
+					keep=0
+#If variant meets all filters for at least one transcript, then extract gene name for all ok transcripts
 		if keep==1:
-			if options.vep:
-				gene=find_vep_gene(options.genecolname, line_vcf[7], csq_anno)
+			if options.vep and "CSQ=" in line_vcf[7]:
+				gene=[]
+				for i in range(0, len(annots), 1):
+					if keep_a[i]==1:
+						gene.append(find_vep_gene_GM(options.genecolname, annots[i], csq_anno))
 			else:
 				gene=find_info_gene(options.genecolname, line_vcf[7])
-			
+			gene=list(set(gene))
 			if len(gene)>0:
-				if gene not in options.genenull.split(","):
-					if options.snpformat=="VCFID":
-						snpid=str(line_vcf[2])
-					else: 
-						snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
-				if gene not in snptable:
-					snptable[gene]=[gene, [snpid]]
-				else:
-					snptable[gene][1].append(snpid)
+				if options.snpformat=="VCFID":
+					snpid=str(line_vcf[2])
+				else: 
+					snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
+				for i in range(0, len(gene), 1):
+					if gene[i] not in options.genenull.split(","):
+						if gene[i] not in snptable:
+					    		snptable[gene[i]]=[gene[i], [snpid]]
+						else:
+							snptable[gene[i]][1].append(snpid)
 pybedtools.cleanup() 			
 
 #Write Output
