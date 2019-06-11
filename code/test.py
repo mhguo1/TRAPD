@@ -243,13 +243,13 @@ def test_include_vep_GM(filter, annot, csq_anno):
                 				return 1
               				else:
                         			return 0
-                   		else:
-                    			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
- 			                       	return 1
-                       			else:
-                        			return 0
+		else:
+			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
+				return 1
+			else:
+				return 0
         else:
-                        return 0
+		return 0
 	
 def test_exclude_vep_GM(filter, annot, csq_anno):
         option_field=filter.split("[")[0]
@@ -268,13 +268,13 @@ def test_exclude_vep_GM(filter, annot, csq_anno):
                     	    			return 0
                        			else:
                         			return 1
-                    		else:
-                    			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
-						return 0
-                        		else:
-						return 1
+		else:
+			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
+				return 0
+			else:
+				return 1
         else:
-                        return 0
+		return 0
 		
 def find_vep_gene_GM(genecolname, annot, csq_anno):
     csq_index=csq_anno.index(genecolname)
