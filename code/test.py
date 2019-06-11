@@ -234,20 +234,20 @@ def test_include_vep_GM(filter, annot, csq_anno):
         consist_out=consistent(option_value, field_value)
         if consist_out[2]==1:
         	if filter.split("[")[1].split("]")[0]=="in":
-            	listvalues=option_value.lstrip("(").rstrip(")").split(',')
-                counter=0
-                for i in range(0, len(listvalues), 1):
-                	if operator.eq(field_value, listvalues[i]):
-                    		counter+=1
-                    		if counter>0:
-                			return 1
-              		else:
-                        	return 0
-                    else:
-                    	if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
-                        	return 1
-                        else:
-                        	return 0
+            		listvalues=option_value.lstrip("(").rstrip(")").split(',')
+                	counter=0
+                	for i in range(0, len(listvalues), 1):
+                		if operator.eq(field_value, listvalues[i]):
+                    			counter+=1
+                    			if counter>0:
+                				return 1
+              				else:
+                        			return 0
+                   		else:
+                    			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
+ 			                       	return 1
+                       			else:
+                        			return 0
         else:
                         return 0
 	
@@ -259,20 +259,20 @@ def test_exclude_vep_GM(filter, annot, csq_anno):
         consist_out=consistent(option_value, field_value)
         if consist_out[2]==1:
         	if filter.split("[")[1].split("]")[0]=="in":
-            	listvalues=option_value.lstrip("(").rstrip(")").split(',')
-                counter=0
-                for i in range(0, len(listvalues), 1):
-                	if operator.eq(field_value, listvalues[i]):
-                		counter+=1
-                        	if counter>0:
-                        		return 0
-                        else:
-                        	return 1
-                    else:
-                    	if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
-				return 0
-                        else:
-				return 1
+            		listvalues=option_value.lstrip("(").rstrip(")").split(',')
+                	counter=0
+                	for i in range(0, len(listvalues), 1):
+                		if operator.eq(field_value, listvalues[i]):
+                			counter+=1
+                   		     	if counter>0:
+                    	    			return 0
+                       			else:
+                        			return 1
+                    		else:
+                    			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
+						return 0
+                        		else:
+						return 1
         else:
                         return 0
 		
