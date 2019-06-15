@@ -10,7 +10,7 @@ parser$add_argument("--recessive", default=FALSE, action="store_true")
 parser$add_argument("--removenull", default=FALSE, action="store_true")
 args <- parser$parse_args()
 
-dat<-read.delim(paste(args$countsfile, ".burden.txt", sep=""), header=T, stringsAsFactors = F, sep="\t")
+dat<-read.delim(args$pvalfile, header=T, stringsAsFactors = F, sep="\t")
 plotname<-args$plotfile
 
 if(args$recessive==TRUE){
