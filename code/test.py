@@ -239,10 +239,10 @@ def test_include_vep_GM(filter, annot, csq_anno):
                 	for i in range(0, len(listvalues), 1):
                 		if operator.eq(field_value, listvalues[i]):
                     			counter+=1
-                    	if counter>0:
-                		return 1
-              		else:
-                       		return 0
+                    			if counter>0:
+                				return 1
+              				else:
+                        			return 0
 		else:
 			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
 				return 1
@@ -264,10 +264,10 @@ def test_exclude_vep_GM(filter, annot, csq_anno):
                 	for i in range(0, len(listvalues), 1):
                 		if operator.eq(field_value, listvalues[i]):
                 			counter+=1
-                   	if counter>0:
-     				return 0
-                       	else:
-                       		return 1
+                   		     	if counter>0:
+                    	    			return 0
+                       			else:
+                        			return 1
 		else:
 			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
 				return 0
@@ -380,19 +380,17 @@ for line_vcf1 in open(vcffile_temp.fn):
 								iter=iter+1
 				if not 1 in keep_a:
 					keep=0
-
 #If variant meets all filters for at least one transcript, then extract gene name for all ok transcripts
 		if keep==1:
-			if options.vep and "CSQ=" in line_vcf[7]:
+			vcfline=line_vcf[7].replace("vep=", "CSQ=")
+			if options.vep and "CSQ=" in vcfline:
 				gene=[]
-				sys.stdout.write(str(len(annots))+"\n")
 				for i in range(0, len(annots), 1):
 					if keep_a[i]==1:
 						gene.append(find_vep_gene_GM(options.genecolname, annots[i], csq_anno))
 			else:
 				gene=find_info_gene(options.genecolname, line_vcf[7])
 			gene=list(set(gene))
-			
 			if len(gene)>0:
 				if options.snpformat=="VCFID":
 					snpid=str(line_vcf[2])
