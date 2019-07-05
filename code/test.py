@@ -374,7 +374,7 @@ for line_vcf1 in open(vcffile_temp.fn):
 					for i in range(0, len(annots), 1):
  						if len(csq_anno)==len(annots[i].split("|")):
 							iter=0
-							while keep_a[i]==1 and iter<len(options.includevep):
+							while keep_a[i]==1 and iter<len(options.excludevep):
 								filter=options.excludevep[iter]
 								keep_a[i]=test_exclude_vep_GM(filter, annots[i], csq_anno)
 								iter=iter+1
