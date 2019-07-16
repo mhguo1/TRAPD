@@ -172,6 +172,61 @@ def canonical_vep(vcfline):
                         if str(annots[i].split("|")[canonical_index])=="YES":
                                 out=annots[i]
         return out
+
+
+def test_include_info(filter, vcfline):
+        option_field=filter.split("[")[0]
+        option_value=filter.split("]")[1]
+	if (";"+option_field+"=") in (";"+vcfline):
+		field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
+		consist_out=consistent(option_value, field_value)
+		if consist_out[2]==1:
+			if filter.split("[")[1].split("]")[0]=="in":
+				listvalues=option_value.lstrip("(").rstrip(")").split(',')
+				counter=0
+				for i in range(0, len(listvalues), 1):
+					if operator.eq(field_value, listvalues[i]):
+						counter+=1
+				if counter>0:
+					return 1
+				else:
+					return 0
+			else:
+        			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
+					return 1
+	        		else:
+        	        		return 0
+		else:
+			return 0
+	else:
+		return 0
+
+def test_exclude_info(filter, vcfline):
+        option_field=filter.split("[")[0]
+        option_value=filter.split("]")[1]
+	if (";"+option_field+"=") in (";"+vcfline):
+		field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
+		consist_out=consistent(option_value, field_value)
+		if consist_out[2]==1:
+			if filter.split("[")[1].split("]")[0]=="in":
+				listvalues=option_value.lstrip("(").rstrip(")").split(',')
+				counter=0
+				for i in range(0, len(listvalues), 1):
+					if operator.eq(field_value, listvalues[i]):
+						counter+=1
+				if counter>0:
+					return 0
+				else:
+					return 1
+			else:
+        			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
+					return 0
+        			else:
+                			return 1
+		else:
+			return 0
+	else:
+		return 0
 	
 def test_include_vep(filter, annot, csq_anno):
         option_field=filter.split("[")[0]
