@@ -172,61 +172,8 @@ def canonical_vep(vcfline):
                         if str(annots[i].split("|")[canonical_index])=="YES":
                                 out=annots[i]
         return out
-
-def test_include_info(filter, vcfline):
-        option_field=filter.split("[")[0]
-        option_value=filter.split("]")[1]
-	if (";"+option_field+"=") in (";"+vcfline):
-		field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
-		consist_out=consistent(option_value, field_value)
-		if consist_out[2]==1:
-			if filter.split("[")[1].split("]")[0]=="in":
-				listvalues=option_value.lstrip("(").rstrip(")").split(',')
-				counter=0
-				for i in range(0, len(listvalues), 1):
-					if operator.eq(field_value, listvalues[i]):
-						counter+=1
-				if counter>0:
-					return 1
-				else:
-					return 0
-			else:
-        			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
-					return 1
-	        		else:
-        	        		return 0
-		else:
-			return 0
-	else:
-		return 0
-
-def test_exclude_info(filter, vcfline):
-        option_field=filter.split("[")[0]
-        option_value=filter.split("]")[1]
-	if (";"+option_field+"=") in (";"+vcfline):
-		field_value=(";"+vcfline).split((";"+option_field+"="))[1].split(";")[0].split(",")[0]
-		consist_out=consistent(option_value, field_value)
-		if consist_out[2]==1:
-			if filter.split("[")[1].split("]")[0]=="in":
-				listvalues=option_value.lstrip("(").rstrip(")").split(',')
-				counter=0
-				for i in range(0, len(listvalues), 1):
-					if operator.eq(field_value, listvalues[i]):
-						counter+=1
-				if counter>0:
-					return 0
-				else:
-					return 1
-			else:
-        			if get_operator_fn(filter.split("[")[1].split("]")[0])(consist_out[1], consist_out[0]):
-					return 0
-        			else:
-                			return 1
-		else:
-			return 0
-	else:
-		return 0
-def test_include_vep_GM(filter, annot, csq_anno):
+	
+def test_include_vep(filter, annot, csq_anno):
         option_field=filter.split("[")[0]
         csq_index=csq_anno.index(option_field)
         option_value=filter.split("]")[1]
@@ -251,7 +198,7 @@ def test_include_vep_GM(filter, annot, csq_anno):
         else:
 		return 0
 	
-def test_exclude_vep_GM(filter, annot, csq_anno):
+def test_exclude_vep(filter, annot, csq_anno):
         option_field=filter.split("[")[0]
         csq_index=csq_anno.index(option_field)
         option_value=filter.split("]")[1]
@@ -276,19 +223,12 @@ def test_exclude_vep_GM(filter, annot, csq_anno):
         else:
 		return 0
 		
-def find_vep_gene_GM(genecolname, annot, csq_anno):
+def find_vep_gene(genecolname, annot, csq_anno):
     csq_index=csq_anno.index(genecolname)
     genename=annot.split("|")[csq_index]
     return genename
 
-def find_vep_gene(genecolname, vcfline, csq_anno):
-        csq_index=csq_anno.index(genecolname)
-	vcfline=vcfline.replace("vep=", "CSQ=")
-        if "CSQ" in vcfline:
-                genename=(";"+vcfline).split(";CSQ=")[1].split(";")[0].split(",")[0].split("|")[csq_index]
-        else:
-                genename=""
-        return genename
+
 
 def find_info_gene(genecolname, vcfline):
 	if genecolname in vcfline:		
@@ -368,7 +308,7 @@ for line_vcf1 in open(vcffile_temp.fn):
 							iter=0
 							while keep_a[i]==1 and iter<len(options.includevep):
 								filter=options.includevep[iter]
-								keep_a[i]=test_include_vep_GM(filter, annots[i], csq_anno)
+								keep_a[i]=test_include_vep(filter, annots[i], csq_anno)
 								iter=iter+1
 				if options.excludevep is not None:
 					for i in range(0, len(annots), 1):
@@ -376,7 +316,7 @@ for line_vcf1 in open(vcffile_temp.fn):
 							iter=0
 							while keep_a[i]==1 and iter<len(options.excludevep):
 								filter=options.excludevep[iter]
-								keep_a[i]=test_exclude_vep_GM(filter, annots[i], csq_anno)
+								keep_a[i]=test_exclude_vep(filter, annots[i], csq_anno)
 								iter=iter+1
 				if not 1 in keep_a:
 					keep=0
@@ -387,7 +327,7 @@ for line_vcf1 in open(vcffile_temp.fn):
 				gene=[]
 				for i in range(0, len(annots), 1):
 					if keep_a[i]==1:
-						gene.append(find_vep_gene_GM(options.genecolname, annots[i], csq_anno))
+						gene.append(find_vep_gene(options.genecolname, annots[i], csq_anno))
 			else:
 				gene=find_info_gene(options.genecolname, line_vcf[7])
 			gene=list(set(gene))
