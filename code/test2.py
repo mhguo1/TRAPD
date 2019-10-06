@@ -316,8 +316,8 @@ if options.bedfilename is not None:
 	vcffile.close()
 	all_snp_list=set(all_snp_list)
 	
-	if str(options.bedfile).endswith(".gz") is True:
-		bed=open(options.bedfile, "rb")
+	if str(options.bedfilename).endswith(".gz") is True:
+		bed=gzip.open(options.bedfilename, "rb")
 	else:
 		bed=open(options.bedfile, "r")
 	
@@ -344,7 +344,7 @@ for line_vcf1 in vcffile:
 				keep=0
 		if "," in line_vcf[4]:
 			keep=0
-		if options.bedfile is not None:
+		if options.bedfilename is not None:
 			snp=str(line_vcf[0])+":"+str(line_vcf[1])
 			if snp not in bed_snp_list:
 				keep=0
