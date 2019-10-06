@@ -306,7 +306,7 @@ snptable={}
 
 #subset bedfile
 if options.bedfilename is not None:
-	vcffile=open(options.vcffilename, "rb")
+	vcffile=gzip.open(options.vcffilename, "rb")
 	all_snp_list=[]
 	bed_snp_list=[]
 	for line_v1 in vcffile:
@@ -328,8 +328,8 @@ if options.bedfilename is not None:
 	bed.close()
 		
 
-vcffile=open(options.vcffilename, "rb")
-for line_vcf1 in vcf:
+vcffile=gzip.open(options.vcffilename, "rb")
+for line_vcf1 in vcffile:
 	line_vcf=line_vcf1.rstrip().split('\t')
 	keep=1
 	if line_vcf[0][0]!="#":
@@ -410,7 +410,7 @@ for line_vcf1 in vcf:
 					    		snptable[gene[i]]=[gene[i], [snpid]]
 						else:
 							snptable[gene[i]][1].append(snpid)
-vcf.close()		
+vcffile.close()		
 
 #Write Output
 outfile=open(options.outfilename, "w")
