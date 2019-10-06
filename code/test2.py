@@ -4,9 +4,6 @@ import operator
 import re
 import sys
 import gzip 
-import pybedtools
-from pybedtools import BedTool
-
 
 #Parse options
 parser = optparse.OptionParser()
@@ -307,20 +304,32 @@ def get_operator_fn(op):
 #Create empty snptable
 snptable={}
 
-
-#Open vcf file
-vcffile=BedTool(options.vcffilename)
+#subset bedfile
 if options.bedfilename is not None:
-        bed=BedTool(options.bedfilename)
-        vcffile_temp=vcffile.intersect(bed)
-else:
-        if chrformat=="chr":
-                dummy_bed=BedTool('chr1000 100000000 100000001', from_string=True)
-        else:
-                dummy_bed=BedTool('1000 100000000 100000001', from_string=True)
-        vcffile_temp=vcffile.subtract(dummy_bed)
+	vcffile=open(options.vcffilename, "rb")
+	all_snp_list=[]
+	bed_snp_list=[]
+	for line_v1 in vcffile:
+		line_v=line_v1.rstrip().split('\t')
+		if line_v[0][0]!="#":
+			all_snp_list.append(str(line_v[0]).lower().replace("chr", "")+":"+str(line_v[1]))
+	vcffile.close()
+	all_snp_list=set(all_snp_list)
+	
+	if str(options.bedfile).endswith(".gz") is True:
+		bed=open(options.bedfile, "rb")
+	else:
+		bed=open(options.bedfile, "r")
+	
+	for line_b1 in bed:
+		line_b=line_b1.rstrip().split('\t')
+		temp_snp=set([str(line_b[0])+":"+s for s in [str(i) for i in range(line_b[1]+1, line_b[2]+1)]])
+		bed_snp_list=bed_snp_list+list(temp_snp & all_snp_list)
+	bed.close()
+		
 
-for line_vcf1 in open(vcffile_temp.fn):
+vcffile=open(options.vcffilename, "rb")
+for line_vcf1 in vcf:
 	line_vcf=line_vcf1.rstrip().split('\t')
 	keep=1
 	if line_vcf[0][0]!="#":
@@ -335,7 +344,11 @@ for line_vcf1 in open(vcffile_temp.fn):
 				keep=0
 		if "," in line_vcf[4]:
 			keep=0
-  
+		if options.bedfile is not None:
+			snp=str(line_vcf[0])+":"+str(line_vcf[1])
+			if snp not in bed_snp_list:
+				keep=0
+			
  #Go through INFO field filters
 		if keep==1 and options.includeinfo is not None:
 			iter=0
@@ -397,7 +410,7 @@ for line_vcf1 in open(vcffile_temp.fn):
 					    		snptable[gene[i]]=[gene[i], [snpid]]
 						else:
 							snptable[gene[i]][1].append(snpid)
-pybedtools.cleanup() 			
+vcf.close()		
 
 #Write Output
 outfile=open(options.outfilename, "w")
