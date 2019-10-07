@@ -308,27 +308,46 @@ snptable={}
 if options.bedfilename is not None:
 	vcffile=gzip.open(options.vcffilename, "rb")
 	all_snp_list=[]
+	all_snp_list={}
 	bed_snp_list=[]
 	for line_v1 in vcffile:
 		line_v=line_v1.rstrip().split('\t')
 		if line_v[0][0]!="#":
-			all_snp_list.append(str(line_v[0]).lower().replace("chr", "")+":"+str(line_v[1]))
+	#		all_snp_list.append(str(line_v[0]).lower().replace("chr", "")+":"+str(line_v[1]))
+			chr=str(line_v[0]).lower().replace("chr", "")
+			if chr not in all_snp_list:
+				all_snp_list[chr]=[chr, []]
+			all_snp_list[chr][1].append(line_v[1])
+	
 	vcffile.close()
-	all_snp_list=set(all_snp_list)
+	#all_snp_list=set(all_snp_list)
 	
 	if str(options.bedfilename).endswith(".gz") is True:
 		bed=gzip.open(options.bedfilename, "rb")
 	else:
 		bed=open(options.bedfile, "r")
 	
-	for line_b1 in bed:
-		line_b=line_b1.rstrip().split('\t')
-		temp_snp=set([str(line_b[0])+":"+s for s in [str(i) for i in range(line_b[1]+1, line_b[2]+1)]])
-		bed_snp_list=bed_snp_list+list(temp_snp & all_snp_list)
-	bed.close()
+        for line_b1 in bed:
+                line_b=line_b1.rstrip().split('\t')
+                chr=str(line_b[0]).lower().replace("chr", "")
+                if chr in all_snp_list:
+                        temp=[int(i) for i in all_snp_list[chr][1]]
+                        if len(temp)>0:
+                                temp_pos=list(set(range(int(line_b[1])+1, int(line_b[2])+1))& set(temp))
+                                if len(temp_pos)>0:
+                                        bed_snp_list=bed_snp_list+list([chr+":"+s for s in [str(i) for i in temp_pos]])
+                                all_snp_list[chr][1]=[n for n in temp if int(n)>int(line_b[2])]
+        bed.close()
 		
 
 vcffile=gzip.open(options.vcffilename, "rb")
+if options.bedfilename is not None:
+	if str(options.bedfilename).endswith(".gz") is True:
+		bed=gzip.open(options.bedfilename, "rb")
+	else:
+		bed=open(options.bedfile, "r")
+	bed.readline()
+		
 for line_vcf1 in vcffile:
 	line_vcf=line_vcf1.rstrip().split('\t')
 	keep=1
@@ -348,7 +367,7 @@ for line_vcf1 in vcffile:
 			snp=str(line_vcf[0])+":"+str(line_vcf[1])
 			if snp not in bed_snp_list:
 				keep=0
-			
+
  #Go through INFO field filters
 		if keep==1 and options.includeinfo is not None:
 			iter=0
