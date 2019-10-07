@@ -4,6 +4,7 @@ import operator
 import re
 import sys
 import gzip 
+import bisect
 
 #Parse options
 parser = optparse.OptionParser()
@@ -305,40 +306,57 @@ def get_operator_fn(op):
 snptable={}
 
 #subset bedfile
-if options.bedfilename is not None:
-	vcffile=gzip.open(options.vcffilename, "rb")
-	all_snp_list=[]
-	all_snp_list={}
-	bed_snp_list=[]
-	for line_v1 in vcffile:
-		line_v=line_v1.rstrip().split('\t')
-		if line_v[0][0]!="#":
-	#		all_snp_list.append(str(line_v[0]).lower().replace("chr", "")+":"+str(line_v[1]))
-			chr=str(line_v[0]).lower().replace("chr", "")
-			if chr not in all_snp_list:
-				all_snp_list[chr]=[chr, []]
-			all_snp_list[chr][1].append(line_v[1])
+#if options.bedfilename is not None:
+#	vcffile=gzip.open(options.vcffilename, "rb")
+#	all_snp_list=[]
+#	all_snp_list={}
+#	bed_snp_list=[]
+#	for line_v1 in vcffile:
+#		line_v=line_v1.rstrip().split('\t')
+#		if line_v[0][0]!="#":
+#	#		all_snp_list.append(str(line_v[0]).lower().replace("chr", "")+":"+str(line_v[1]))
+#			chr=str(line_v[0]).lower().replace("chr", "")
+#			if chr not in all_snp_list:
+#				all_snp_list[chr]=[chr, []]
+#			all_snp_list[chr][1].append(line_v[1])
 	
-	vcffile.close()
+#	vcffile.close()
 	#all_snp_list=set(all_snp_list)
 	
+#	if str(options.bedfilename).endswith(".gz") is True:
+#		bed=gzip.open(options.bedfilename, "rb")
+#	else:
+#		bed=open(options.bedfile, "r")
+	
+#        for line_b1 in bed:
+#                line_b=line_b1.rstrip().split('\t')
+#                chr=str(line_b[0]).lower().replace("chr", "")
+#                if chr in all_snp_list:
+#                        temp=[int(i) for i in all_snp_list[chr][1]]
+#                        if len(temp)>0:
+#                                temp_pos=list(set(range(int(line_b[1])+1, int(line_b[2])+1))& set(temp))
+#                                if len(temp_pos)>0:
+#                                        bed_snp_list=bed_snp_list+list([chr+":"+s for s in [str(i) for i in temp_pos]])
+#                               all_snp_list[chr][1]=[n for n in temp if int(n)>int(line_b[2])]
+#        bed.close()
+
+if options.bedfilename is not None:
 	if str(options.bedfilename).endswith(".gz") is True:
 		bed=gzip.open(options.bedfilename, "rb")
 	else:
 		bed=open(options.bedfile, "r")
-	
-        for line_b1 in bed:
+	bed_lower={}
+	bed_upper={}
+       	for line_b1 in bed:
                 line_b=line_b1.rstrip().split('\t')
                 chr=str(line_b[0]).lower().replace("chr", "")
-                if chr in all_snp_list:
-                        temp=[int(i) for i in all_snp_list[chr][1]]
-                        if len(temp)>0:
-                                temp_pos=list(set(range(int(line_b[1])+1, int(line_b[2])+1))& set(temp))
-                                if len(temp_pos)>0:
-                                        bed_snp_list=bed_snp_list+list([chr+":"+s for s in [str(i) for i in temp_pos]])
-                                all_snp_list[chr][1]=[n for n in temp if int(n)>int(line_b[2])]
-        bed.close()
+		if chr in bed_lower:
+			bed_lower[chr]=[chr, []]
+			bed_upper[chr]=[chr, []]
+		bed_lower[chr][1].append(int(line_b[1]+1)
+		bed_upper[chr][1].append(int(line_b[2])
 		
+	bed.close()	
 
 vcffile=gzip.open(options.vcffilename, "rb")
 if options.bedfilename is not None:
@@ -364,10 +382,16 @@ for line_vcf1 in vcffile:
 		if "," in line_vcf[4]:
 			keep=0
 		if options.bedfilename is not None:
-			snp=str(line_vcf[0])+":"+str(line_vcf[1])
-			if snp not in bed_snp_list:
+		#	snp=str(line_vcf[0])+":"+str(line_vcf[1])
+		#	if snp not in bed_snp_list:
+		#		keep=0
+			chr=str(line_v[0]).lower().replace("chr", "")
+			temp_index=bisect.bisect(bed_lower[chr][1], int(line_v[1]))-1
+			if temp_index<0:
+				keep=0	 
+			elif int(line_v[1])>bed_upper[chr][1][temp_index]:
 				keep=0
-
+					 
  #Go through INFO field filters
 		if keep==1 and options.includeinfo is not None:
 			iter=0
