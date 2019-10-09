@@ -324,12 +324,6 @@ if options.bedfilename is not None:
 	bed.close()	
 
 vcffile=gzip.open(options.vcffilename, "rb")
-if options.bedfilename is not None:
-	if str(options.bedfilename).endswith(".gz") is True:
-		bed=gzip.open(options.bedfilename, "rb")
-	else:
-		bed=open(options.bedfile, "r")
-	bed.readline()
 		
 for line_vcf1 in vcffile:
 	line_vcf=line_vcf1.rstrip().split('\t')
