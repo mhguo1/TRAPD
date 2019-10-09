@@ -11,9 +11,8 @@ TRAPD is written in Python and R. For Python, it is recommended to use Python ve
 Required Python packages:
 - optparse
 - operator
-- pybedtools
 
-BEDTools (http://bedtools.readthedocs.io/en/latest/) must also be loaded in the environment. 
+NOTE: As of 10/8/2019, TRAPD no longer required pybedtools.
 
 
 **0) Pre-processing:**
