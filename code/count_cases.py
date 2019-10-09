@@ -171,7 +171,7 @@ for line_vcf1 in vcffile:
 			if options.snpformat=="VCFID":
 				snpid=str(line_vcf[2])
 			else: 
-				snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
+				snpid=str(line_vcf[0]).lower().replace("chr", "")+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
 			if (snpid in allsnplist) and (keep==1):
 				counts=findcarriers(line_vcf, options.gtfield, options.snpformat, sampleindices, options.maxAC, options.maxAF, options.minAN)
 				if counts[2]>0:
