@@ -4,8 +4,7 @@ import operator
 import re
 import sys
 import gzip 
-import pybedtools
-from pybedtools import BedTool
+import bisect
 
 #Parse options
 parser = optparse.OptionParser()
@@ -209,30 +208,49 @@ allsnplist=makesnplist(options.snpfilename)
 #Make a hashtable with keys as each SNP, and stores a list of indices of carriers for that SNP
 count_table={} 
 
-#Open vcf file
-vcffile=BedTool(options.vcffilename)
-if options.bedfilename is not None:
-        bed=BedTool(options.bedfilename)
-        vcffile_temp=vcffile.intersect(bed)
-else:
-        if chrformat=="chr":
-                dummy_bed=BedTool('chr1000 100000000 100000001', from_string=True)
-        else:
-                dummy_bed=BedTool('1000 100000000 100000001', from_string=True)
-        vcffile_temp=vcffile.subtract(dummy_bed)
 
-for line_vcf1 in open(vcffile_temp.fn):
+#read in bedfile
+if options.bedfilename is not None:
+	if str(options.bedfilename).endswith(".gz") is True:
+		bed=gzip.open(options.bedfilename, "rb")
+	else:
+		bed=open(options.bedfile, "r")
+	bed_lower={}
+	bed_upper={}
+       	for line_b1 in bed:
+                line_b=line_b1.rstrip().split('\t')
+                chr=str(line_b[0]).lower().replace("chr", "")
+		if chr not in bed_lower:
+			bed_lower[chr]=[chr, []]
+			bed_upper[chr]=[chr, []]
+                bed_lower[chr][1].append(int(line_b[1])+1)
+                bed_upper[chr][1].append(int(line_b[2]))
+	bed.close()
+
+vcffile=gzip.open(options.vcffilename, "rb")
+		
+for line_vcf1 in vcffile:
 	line_vcf=line_vcf1.rstrip().split('\t')
 	if line_vcf[0][0]!="#" and ("," not in line_vcf[4]):
+		keep=1
+		#Subset on bedfile
+		if options.bedfilename is not None:
+			chr=str(line_vcf[0]).lower().replace("chr", "")
+			temp_index=bisect.bisect(bed_lower[chr][1], int(line_vcf[1]))-1
+			if temp_index<0:
+				keep=0	 
+			elif int(line_vcf[1])>bed_upper[chr][1][temp_index]:
+				keep=0
+				
 		if not (options.passfilter and line_vcf[6]!="PASS"):
 			if options.snpformat=="VCFID":
 				snpid=str(line_vcf[2])
 			else: 
-				snpid=str(line_vcf[0].lstrip("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
-			if snpid in allsnplist:
+				snpid=str(line_vcf[0].lower().replace("chr"))+":"+str(line_vcf[1])+":"+str(line_vcf[3])+":"+str(line_vcf[4])
+			if (snpid in allsnplist) and (keep==1):
 				counts=extractcounts(pops, line_vcf[7], options.maxAC, options.maxAF, options.popmaxAF,options.minAN)
 				count_table[snpid]=[snpid, counts[0], counts[1]]
-pybedtools.cleanup() 
+vcffile.close() 
 
 #Write output
 outfile=open(options.outfilename, "w")
