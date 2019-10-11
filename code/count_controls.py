@@ -214,7 +214,7 @@ if options.bedfilename is not None:
 	if str(options.bedfilename).endswith(".gz") is True:
 		bed=gzip.open(options.bedfilename, "rb")
 	else:
-		bed=open(options.bedfile, "r")
+		bed=open(options.bedfilename, "r")
 	bed_lower={}
 	bed_upper={}
        	for line_b1 in bed:
