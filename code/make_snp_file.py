@@ -373,22 +373,23 @@ for line_vcf1 in vcffile:
             		if "CSQ=" in vcfline:
 				annots=(";"+vcfline).split(";CSQ=")[1].split(";")[0].split(",")
 				keep_a = [1] * len(annots)
-				if options.includevep is not None:
-                  			for i in range(0, len(annots), 1):
-                      				if len(csq_anno)==len(annots[i].split("|")) and canonical_vep(annots[i])==1:
+				
+                  		for i in range(0, len(annots), 1):
+                      			if len(csq_anno)==len(annots[i].split("|")) and canonical_vep(annots[i])==1:
+						if options.includevep is not None:
 							iter=0
 							while keep_a[i]==1 and iter<len(options.includevep):
 								filter=options.includevep[iter]
 								keep_a[i]=test_include_vep(filter, annots[i], csq_anno)
 								iter=iter+1
-				if options.excludevep is not None:
-					for i in range(0, len(annots), 1):
- 						if len(csq_anno)==len(annots[i].split("|")) and canonical_vep(annots[i])==1:
+						if options.excludevep is not None:
 							iter=0
-							while keep_a[i]==1 and iter<len(options.excludevep):
-								filter=options.excludevep[iter]
-								keep_a[i]=test_exclude_vep(filter, annots[i], csq_anno)
+							while keep_a[i]==1 and iter<len(options.includevep):
+								filter=options.includevep[iter]
+								keep_a[i]=test_include_vep(filter, annots[i], csq_anno)
 								iter=iter+1
+					else:
+						keep_a[i]=0
 				if not 1 in keep_a:
 					keep=0
 #If variant meets all filters for at least one transcript, then extract gene name for all ok transcripts
