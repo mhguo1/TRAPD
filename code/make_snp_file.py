@@ -162,7 +162,7 @@ def is_number(s):
 
 #Extract canonical vep annotation
 def canonical_vep(vcfline):
-        canonical_index=csq_anno.upper().index("CANONICAL")
+        canonical_index=csq_anno.index("CANONICAL")
         out=""
 	if (vcfline.split("|")[canonical_index]).upper()=="YES":
 		out=1
@@ -239,7 +239,7 @@ def test_exclude_info(filter, vcfline):
 		return 0
 	
 
-def test_include_vep(filter, vcfline, csq_anno):
+def test_include_vep(filter, annot, csq_anno):
         option_field=filter.split("[")[0]
         csq_index=csq_anno.index(option_field)
         option_value=filter.split("]")[1]
@@ -264,7 +264,7 @@ def test_include_vep(filter, vcfline, csq_anno):
         else:
                 return 0
 	
-def test_exclude_vep(filter, vcfline, csq_anno):
+def test_exclude_vep(filter, annot, csq_anno):
         option_field=filter.split("[")[0]
         csq_index=csq_anno.index(option_field)
         option_value=filter.split("]")[1]
