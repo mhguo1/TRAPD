@@ -401,7 +401,8 @@ for line_vcf1 in vcffile:
 					if keep_a[i]==1:
 						gene.append(find_vep_gene(options.genecolname, annots[i], csq_anno))
 			else:
-				gene=find_info_gene(options.genecolname, line_vcf[7])
+                                gene=[]
+                                gene.append(find_info_gene(options.genecolname, line_vcf[7]))
 			gene=list(set(gene))
 			if len(gene)>0:
 				if options.snpformat=="VCFID":
