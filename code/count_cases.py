@@ -123,7 +123,7 @@ def calculatecount(genesnps, snptable):
 	all_index=het_index+hom_index
 			
 	#Generate number of individuals carrying one variant
-        count_het=len(set([x for x in all_index if all_index.count(x) > 0]))
+        count_het=len(set([x for x in het_index if het_index.count(x) > 0]))
 	count_ch=len(set([x for x in het_index if het_index.count(x) > 1]))
         count_hom=len(list(set(hom_index)))
 	return [count_het, count_ch, count_hom, total_ac]
