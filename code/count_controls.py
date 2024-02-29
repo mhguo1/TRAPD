@@ -35,8 +35,8 @@ if not options.snpfilename:   # if filename is not given
 if not options.vcffilename:   # if filename is not given
     parser.error('A vcf file is needed')
 
-if options.database not in ["generic", "gnomad", "exac"]:
-	parser.error('Database must be generic, gnomad, or exac')
+if options.database not in ["generic", "gnomad", "ga100k"]:
+	parser.error('Database must be generic, gnomad, or ga100k')
 	
 #Parse populations
 if options.database!="generic" and options.pop is not None:
@@ -49,7 +49,7 @@ if options.database=="gnomad":
 	pop_list=["AFR", "AMR", "ALL", "ASJ", "EAS", "FIN", "NFE", "SAS"]
 	if not all(p in pop_list for p in pops):
 		   parser.error('Please check the populations listed')
-if options.database=="exac":
+if options.database=="ga100k":
 	pop_list=["AFR", "AMR", "ALL", "EAS", "FIN", "NFE", "SAS"]
 	if not all(p in pop_list for p in pops):
 		   parser.error('Please check the populations listed')
@@ -151,7 +151,7 @@ def extractcounts(pops, vcfline, max_ac, max_af, popmax_af,min_an):
 					elif ";hom=" in (";"+vcfline):
 						hom_out=hom_out+num_convert((";"+vcfline).split((";hom_"+temp_pop+"="))[1].split(";")[0].split(",")[0],0)
 
-		elif options.database=="exac":
+		elif options.database=="ga100k":
 			if "ALL" in pops:
 				if ";ac_hom=" in (";"+vcfline):
 					hom_out=(";"+vcfline).split((";ac_hom="))[1].split(";")[0].split(",")[0]
@@ -184,7 +184,7 @@ def get_popmax(vcfline):
 		if ";af_popmax=" in (";"+vcfline):
 			af_popmax_out=num_convert((";"+vcfline).split((";af_popmax="))[1].split(";")[0].split(",")[0],0)
 
-	if options.database=="exac":
+	if options.database=="ga100k":
 		if (";ac_popmax=" in (";"+vcfline)) and (";an_popmax" in (";"+vcfline)):
 			ac_popmax=num_convert((";"+vcfline).split((";ac_popmax="))[1].split(";")[0].split(",")[0],0)
 			an_popmax=num_convert((";"+vcfline).split((";an_popmax="))[1].split(";")[0].split(",")[0],100000000000)
